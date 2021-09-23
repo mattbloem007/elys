@@ -225,7 +225,6 @@ font-size: xx-large;
 color: #ED6F1B;
 font-weight: bold;
 margin-bottom: 5px;
-
 `
 
 const RadioLabel = styled.label`

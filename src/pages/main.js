@@ -5,6 +5,7 @@ import UnlockPage from './unlock'
 import FarmPage from './farm'
 import SwapPage from './swap'
 import PluginPage from './plugin'
+import ForestPage from './forest'
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
@@ -109,6 +110,14 @@ class Main extends Component {
                   body = (
                       <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
                           <PluginPage />
+                      </div>
+                  )
+                  break
+
+              case 'forest':
+                  body = (
+                      <div style={{display: 'flex', position: 'relative', minHeight: 700, width: 'auto'}}>
+                          <ForestPage />
                       </div>
                   )
                   break
