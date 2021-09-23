@@ -26,7 +26,7 @@ const copyToClipboard = () => {
   //navigator.clipboard.writeText(copyText.value);
   let code = localStorage.getItem('ButtonCode')
   //console.log("CODDE" , code)
-  navigator.clipboard.writeText(code);
+//  navigator.clipboard.writeText(code);
 }
 
 
