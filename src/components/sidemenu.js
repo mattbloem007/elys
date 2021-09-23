@@ -26,11 +26,11 @@ const Icon = (props) => {
             textAlign: 'center',
             display: 'inline-block'
         }} target="_blank" rel="noreferrer"><img style={{
-            verticalAlign: 'top',
+            verticalAlign: 'top',  
             margin: 13
         }}
         src={props.src} alt={props.alt} href={props.href} height={22}/></a>
-    )
+    )    
 }
 
 const Link = (props) => {
@@ -56,12 +56,12 @@ const Logo = (props) => {
         textAlign: 'center', textDecoration:'none', display: 'block'}} href="https://elyseos.com" target="_blank" rel="noreferrer">
             <img src={logo} width={70} alt="logo"/>
             <div style={{
-                display: 'inline-block',
-                fontSize: 24,
-                fontWeight: 'bold',
-                color: '#000000',
-                verticalAlign: 'top',
-                marginTop: 20,
+                display: 'inline-block', 
+                fontSize: 24, 
+                fontWeight: 'bold', 
+                color: '#000000', 
+                verticalAlign: 'top', 
+                marginTop: 20, 
                 marginLeft: 10
             }}>
                 ELYS Token
@@ -71,7 +71,7 @@ const Logo = (props) => {
 }
 
 const Price = (props) => {
-    return <div style={{
+    return <div style={{ 
         width: 200,
         display: 'block',
         marginRight: 'auto',
@@ -96,8 +96,8 @@ const Price = (props) => {
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
         <a style={{textDecoration: 'none', color: '#000000'}} href="https://charts.zoocoin.cash/charts?exchange=ZooDex&pair=0x6831b2EDe25Dcc957256FAE815f051181F6C7b08-inverted" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,2)}</a>
         </div>
-
-
+         
+        
     </div>
 }
 
@@ -137,10 +137,9 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'farm'}>Permaculture Farm</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Unlock Tokens</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap @ ZooDEX</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Plugin & Tools</Link>
-
+                
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
-
+                
             </div>
             <div style={{
                 display: 'inline-block',
