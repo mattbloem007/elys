@@ -26,7 +26,7 @@ const copyToClipboard = () => {
   //navigator.clipboard.writeText(copyText.value);
   let code = localStorage.getItem('ButtonCode')
   //console.log("CODDE" , code)
-//  navigator.clipboard.writeText(code);
+  navigator.clipboard.writeText(code);
 }
 
 
@@ -355,7 +355,7 @@ const GetStartedContainer = styled(Container)`
   gap: 100px;
   padding: 0px 0 40px;
   width: 900px;
-  margin-left: 100px;
+  margin-left: 50px;
   margin-bottom: 300px;
   background: #ED6F1B00 0% 0% no-repeat padding-box;
   border: 1px solid #ED6F1B;
