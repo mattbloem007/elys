@@ -581,36 +581,37 @@ const abi = {
         {
             "inputs": [
                 {
-                    "internalType": "uint256",
-                    "name": "amount",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "lockDays",
-                    "type": "uint256"
-                },
-                {
-                    "internalType": "uint256",
-                    "name": "tokenId",
-                    "type": "uint256"
-                }
-            ],
-            "name": "lock",
-            "outputs": [],
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
                     "internalType": "contract IERC20",
                     "name": "token_",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "donationAddress",
                     "type": "address"
                 }
             ],
             "stateMutability": "nonpayable",
             "type": "constructor"
+        },
+        {
+            "anonymous": false,
+            "inputs": [
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "previousOwner",
+                    "type": "address"
+                },
+                {
+                    "indexed": true,
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "OwnershipTransferred",
+            "type": "event"
         },
         {
             "inputs": [
@@ -629,6 +630,19 @@ const abi = {
                 }
             ],
             "stateMutability": "pure",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "donationAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "changeDonation",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -656,6 +670,34 @@ const abi = {
             "type": "function"
         },
         {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "lockDays",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "donation",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "lock",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
             "inputs": [],
             "name": "lockNFT",
             "outputs": [
@@ -670,6 +712,26 @@ const abi = {
         },
         {
             "inputs": [],
+            "name": "owner",
+            "outputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "renounceOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
             "name": "tokenIdCounter",
             "outputs": [
                 {
@@ -679,6 +741,19 @@ const abi = {
                 }
             ],
             "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "newOwner",
+                    "type": "address"
+                }
+            ],
+            "name": "transferOwnership",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         }
     ],

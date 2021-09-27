@@ -64,7 +64,7 @@ const getTokenId = async () => {
     return counter + 1
 }
 
-const lockElys = async (amount, lockDays) => {
+const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
     let acc = await getAccount()
     let elys = await getElysContract()
@@ -74,7 +74,7 @@ const lockElys = async (amount, lockDays) => {
     let tokenId = await getTokenId()
     let factory = await getFactoryContract()
     try{
-        factory.lock(amount*1e5,lockDays,tokenId)
+        factory.lock(amount*1e5, lockDays, donation, tokenId)
     }
     catch(e){
         return {error: e.message}
