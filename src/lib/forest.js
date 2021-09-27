@@ -66,6 +66,7 @@ const getTokenId = async () => {
 
 const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
+    donation = donation || 0
     let acc = await getAccount()
     let elys = await getElysContract()
     let spender = getAddress('forestFactory')
