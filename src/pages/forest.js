@@ -30,7 +30,7 @@ const Forest = (props) => {
                   method: "POST",
                   headers: { "Content-Type": "application/x-www-form-urlencoded" },
                   body: encode({
-                    "form-name": "contact-form",
+                    "form-name": "forest-form",
                     ...data,
                   }),
                 })
@@ -43,7 +43,7 @@ const Forest = (props) => {
           >
           {(formik) => (
             <Form
-              name="contact-form"
+              name="forest-form"
               data-netlify="true"
               data-netlify-honeypot="bot-field"
             >
@@ -120,7 +120,29 @@ const Forest = (props) => {
                 </Flex>
                 <ButtonContainer>
                   <Header>12% APR</Header>
-                  <Submit style={{color: "white", float: "right"}}>Approve</Submit>
+                  <SubLabel style={{float: "right"}}>Reward Amount: 3,000 ELYS</SubLabel>
+                </ButtonContainer>
+              </SacramentSymbolsContainer>
+              <br />
+
+              <SacramentSymbolsContainer>
+              <Label>Forest Fund Contribution</Label>
+                <Flex role="group" aria-labelledby="my-radio-group">
+                  <RadioLabel>
+                    <Field style={{marginBottom: "10px"}} type="radio" name="forest_contribution" value="1" />
+                      1% of rewards
+                  </RadioLabel>
+                  <RadioLabel>
+                    <Field style={{marginBottom: "10px"}} type="radio" name="forest_contribution" value="3" />
+                    3% of rewards
+                  </RadioLabel>
+                  <RadioLabel>
+                    <Field style={{marginBottom: "10px"}} type="radio" name="forest_contribution" value="5" />
+                    5% of rewards
+                  </RadioLabel>
+                </Flex>
+                <ButtonContainer>
+                <Submit style={{color: "white", float: "right"}}>Approve</Submit>
                 </ButtonContainer>
               </SacramentSymbolsContainer>
               <br />
@@ -146,14 +168,73 @@ const Forest = (props) => {
             <Submit style={{color: "white", float: "right"}}>TRANSFER</Submit>
           </ButtonContainer>
           <br/>
+
+          <Label>Transfer</Label>
+          <ClaimContainer>
+            <Titles>DATE</Titles>
+            <Titles>ELYS VALUE</Titles>
+            <Titles>UNLOCKS IN</Titles>
+          </ClaimContainer>
+          <ClaimContainer>
+            <Titles>20-06-2021</Titles>
+            <Titles>21, 876 ELYS</Titles>
+            <Titles>539 Days</Titles>
+          </ClaimContainer>
+          <Formik
+            initialValues={{ transfer_address: "" }}
+            onSubmit={(data, {resetForm, setFieldValue}) => {
+                fetch("/", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                  body: encode({
+                    "form-name": "transfer-form",
+                    ...data,
+                  }),
+                })
+                  .then((form) => {
+                    console.log(form)
+                  })
+                  .catch(error => alert(error))
+
+            }}
+          >
+          {(formik) => (
+            <Form
+              name="transfer-form"
+              data-netlify="true"
+              data-netlify-honeypot="bot-field"
+            >
+            <Flex2>
+              <FeaturesGrid>
+              <FeatureItem>
+                <FeatureText>Address to transfer to:</FeatureText>
+                <Field name="transfer_address" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+              </FeatureItem>
+              </FeaturesGrid>
+              <ErrorMessage name="transfer_address" />
+            </Flex2>
+            <ButtonContainer>
+              <Submit style={{color: "white"}}>TRANSFER</Submit>
+            </ButtonContainer>
+            <br/>
+
+            </Form>
+            )}
+          </Formik>
+
         </Column2>
+        <Row>
+          <div style={{width: "100%", alignItems: "center", display: "flex", justifyContent: "center"}}>
+            <a href="#" style={{color: "white", fontWeight: "bold"}}>Emergency unlock ? click here</a>
+          </div>
+        </Row>
         <BottomText>
           <Header>The Patch is 50% planted</Header>
-          <FeaturesGrid>
+          <FeaturesGrid2>
           <FeatureItem>
             <FeatureText>Once full the patch will be open but no further rewards issued</FeatureText>
           </FeatureItem>
-          </FeaturesGrid>
+          </FeaturesGrid2>
         </BottomText>
         </ForestContainer>
     )
@@ -168,10 +249,9 @@ const ForestPage = (props) => {
 }
 
 const ForestContainer = styled.div`
-  border: solid 2px orange;
+  border: solid 2px #ec7019;
   border-radius: 10px;
   display: grid;
-  grid-template-columns: repeat(1,25em);
   padding: 10px;
   margin: 20px;
   vertical-align: top;
@@ -205,7 +285,7 @@ const Titles = styled.div`
 `
 
 const Column = styled.div`
-  border-right: solid 2px orange;
+  border-right: solid 2px #ec7019;
   padding: 10px;
   font-weight: bold;
   vertical-align: top;
@@ -214,6 +294,11 @@ const Column = styled.div`
 const Column2 = styled.div`
   grid-column-start: 2;
   grid-row-start: 1;
+  padding: 10px;
+`
+const Row = styled.div`
+  grid-column-start: 2;
+  grid-row-start: 2;
   padding: 10px;
 `
 
@@ -251,12 +336,17 @@ const Flex = styled.div`
   display: grid;
   justify-content: space-between;
   align-content: center;
-  grid-template-columns: 100px 100px 100px;
+  grid-template-columns: 150px 150px 150px;
   margin-bottom: 20px;
   @media (max-width: 570px) {
     grid-template-columns: 1fr;
     grid-gap: 64px;
   }
+`
+
+const Flex2 = styled.div`
+  margin-bottom: 20px;
+
 `
 
 const Header = styled.label`
@@ -310,6 +400,15 @@ align-items: center;
 const FeaturesGrid = styled.div`
   max-width: 670px;
   display: grid;
+  grid-column-gap: 40px;
+  grid-row-gap: 35px;
+  @media (max-width: 570px) {
+    grid-template-columns: 1fr;
+    padding: 0 64px;
+  }
+`
+
+const FeaturesGrid2 = styled.div`
   grid-column-gap: 40px;
   grid-row-gap: 35px;
   @media (max-width: 570px) {
