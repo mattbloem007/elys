@@ -150,6 +150,25 @@ const transfer = async (tokenId, to) => {
     return {success: true}
 }
 
+
+//This function increases the number of days so you can test the lock release. For testnet only
+const _inc = async (days) => {
+    if(getNetwork()!=test){
+        alert("This function is for testnet only")
+        return
+    }
+    let lock = await getLock()
+    try{
+        await lock._inc([days])
+    }
+    catch(e){
+        return {error: e.message}
+    }
+    await wait(20000)
+    return {success: true}
+
+}
+
 let $ = {
     getReward, //get's the reward based on amount and lockDays
     approve, //approve that the lockfactory can move user's Elys into the lock contract
@@ -159,7 +178,8 @@ let $ = {
     lockTokensInfo, //gets info about all user's locks (amount, reward, days to release)
     release, //releases locked ELYS and reward after lock period is up
     emergencyRelease, //releases locked ELYS, but forfeits reward before lock period is up
-    transfer //transfers locked ELYS to another user
+    transfer, //transfers locked ELYS to another user
+    _inc //increases number of days to test release. For testnet only
 }
 
 export default $
