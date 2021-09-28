@@ -1,6 +1,28 @@
 import Contract from './contract'
 import contractAddress from '../crypto/contractAddress'
 
+/*
+Some notes:
+
+- I've tried to abstract most of the functonality with these functions
+
+Possible Flow: 
+Releasing existing locks:
+- check to see if the user has any locks:  lockTokensInfo()
+    This returns a list of locks each with tokenId,amount,reward,daysLeft  (tokenId is an identifier for a specific lock - you will use that later)
+    (I've converted to decimals by dividing by 1e5 fow amount and reward)
+- if daysLeft==0 then the user is alowed to release their funds: release(tokenId) 
+- if daysLeft>0 then the user is allowed to emergency release: emergencyReleace(tokenId)
+- A user can also transfer their lock to another user: transfer(tokenId, to)
+
+Creating new locks:
+
+- First you need to call approve to allow the lock factory contract to move ELYS on the user's behalf:
+        approve(amount)     (I'm multiplying by 1e5 so you can just put the amount in wothout worrying about decimals)
+- Once approved you can call lockElys(amount, lockDays, donation)      (donation is a percentage of the reward - so putting in 10 would mean 10% of the reward)
+
+*/
+
 const testAddresses = {
     elys: '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98',
     forestFactory: '0xb052B700f6FAe29AeafcB893983269830c153c0d'
@@ -100,7 +122,7 @@ const lockTokenIDs = async () => {
 const lockTokenInfo = async (tokenId) => {
     let lock = await getLock()
     let {amount,reward,daysLeft} = await lock.lockInfo([tokenId])
-    return {amount,reward,daysLeft} 
+    return {tokenId,amount:amount/1e5,reward:reward/1e5,daysLeft} 
 }
 
 const lockTokensInfo = async () => {
