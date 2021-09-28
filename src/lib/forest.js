@@ -3,7 +3,7 @@ import contractAddress from '../crypto/contractAddress'
 
 const testAddresses = {
     elys: '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98',
-    forestFactory: '0x0625e767c4F36ECAfA577f6C66F0e5aF2AD8813D'
+    forestFactory: '0xb052B700f6FAe29AeafcB893983269830c153c0d'
 }
 
 const wait = (tm) => new Promise(r=>setTimeout(()=>r(),tm))
