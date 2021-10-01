@@ -5,12 +5,14 @@ import UnlockPage from './unlock'
 import FarmPage from './farm'
 import SwapPage from './swap'
 import PluginPage from './plugin'
-import ForestPage from './forest'
+import Forest from './forest'
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
 import elysPrice from '../lib/elysprice'
 import {isMobile} from 'react-device-detect';
+import iboga from '../images/iboga-white-icon.png'
+
 
 import PageWrapper from '../components/pagewrapper'
 
@@ -117,7 +119,7 @@ class Main extends Component {
               case 'forest':
                   body = (
                       <div style={{display: 'flex', position: 'relative', minHeight: 700, width: 'auto'}}>
-                          <ForestPage />
+                        <Forest icon={iboga} title={'The Forest'} pair={'FTM-ELYS'} pairType={'Single token Lock'} lockTime={'12, 24, 36 Months'} return={'12%, 32%, 60%'} apr={'12% - 20%'} paidIn={'ELYS'}/>
                       </div>
                   )
                   break

@@ -6,12 +6,12 @@ Some notes:
 
 - I've tried to abstract most of the functonality with these functions
 
-Possible Flow: 
+Possible Flow:
 Releasing existing locks:
 - check to see if the user has any locks:  lockTokensInfo()
     This returns a list of locks each with tokenId,amount,reward,daysLeft  (tokenId is an identifier for a specific lock - you will use that later)
     (I've converted to decimals by dividing by 1e5 fow amount and reward)
-- if daysLeft==0 then the user is alowed to release their funds: release(tokenId) 
+- if daysLeft==0 then the user is alowed to release their funds: release(tokenId)
 - if daysLeft>0 then the user is allowed to emergency release: emergencyReleace(tokenId)
 - A user can also transfer their lock to another user: transfer(tokenId, to)
 
@@ -30,7 +30,7 @@ const testAddresses = {
 
 const wait = (tm) => new Promise(r=>setTimeout(()=>r(),tm))
 
-const getNetwork = () => (window.ethereum.networkVersion!=='250')?'main':(window.ethereum.networkVersion=='4002')?'test':'unknown'
+const getNetwork = () => (window.ethereum.networkVersion == 250)?'main':(window.ethereum.networkVersion == 4002)?'test':'unknown'
 
 const getAddress = (nm) => (getNetwork()=='main')?contractAddress[nm]:(getNetwork()=='test')?testAddresses[nm]:null
 
@@ -76,6 +76,8 @@ const getAccount = async () => {
 const getElysBalance = async () => {
     let acc = await getAccount()
     let elys = await getElysContract()
+    console.log("account", getNetwork())
+    console.log("Network ", window.ethereum.networkVersion)
     let bal = await elys.balanceOf([acc])
     return bal
 }
@@ -122,11 +124,12 @@ const lockTokenIDs = async () => {
 const lockTokenInfo = async (tokenId) => {
     let lock = await getLock()
     let {amount,reward,daysLeft} = await lock.lockInfo([tokenId])
-    return {tokenId,amount:amount/1e5,reward:reward/1e5,daysLeft} 
+    return {tokenId,amount:amount/1e5,reward:reward/1e5,daysLeft}
 }
 
 const lockTokensInfo = async () => {
     let ar = await lockTokenIDs()
+    console.log("ar", ar)
     let arInfo = []
     for(var i=0;i<ar.length;i++){
         let info = await lockTokenInfo(ar[i])
