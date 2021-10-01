@@ -107,7 +107,7 @@ const lockElys = async (amount, lockDays, donation) => {
     let factory = await getFactoryContract()
     console.log("factory", factory)
     try{
-        factory.lock([amount*1e5, lockDays, donation, tokenId])
+        await factory.lock([amount*1e5, lockDays, donation, tokenId])
     }
     catch(e){
         return {error: e.message}
