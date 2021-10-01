@@ -30,7 +30,7 @@ const testAddresses = {
 
 const wait = (tm) => new Promise(r=>setTimeout(()=>r(),tm))
 
-const getNetwork = () => (window.ethereum.networkVersion == 250)?'main':(window.ethereum.networkVersion == 4002)?'test':'unknown'
+const getNetwork = () => (window.ethereum.networkVersion === '250')?'main':(window.ethereum.networkVersion === '4002')?'test':'unknown'
 
 const getAddress = (nm) => (getNetwork()=='main')?contractAddress[nm]:(getNetwork()=='test')?testAddresses[nm]:null
 
@@ -99,7 +99,7 @@ const lockElys = async (amount, lockDays, donation) => {
     let tokenId = await getTokenId()
     let factory = await getFactoryContract()
     try{
-        factory.lock(amount*1e5, lockDays, donation, tokenId)
+        factory.lock([amount*1e5, lockDays, donation, tokenId])
     }
     catch(e){
         return {error: e.message}
