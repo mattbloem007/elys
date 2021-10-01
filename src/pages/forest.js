@@ -34,6 +34,7 @@ class Forest extends React.Component {
           lockDays: "",
           canLock: "",
           transferAddress: "",
+          balance: 0,
           lockInfo: [{tokenId: "", date: d.toDateString(), amount: "-", daysLeft: "N/A", reward: "-"}]
       };
   }
@@ -52,6 +53,8 @@ class Forest extends React.Component {
     // }
     if (window.web3.eth) {
       this.getLockInfo()
+      let bal = await $.getElysBalance()
+      this.setState({balance: bal})
     }
   }
 
@@ -192,7 +195,7 @@ class Forest extends React.Component {
                   <FeaturesGrid>
                   <FeatureItem>
                     <Label htmlFor="lock_amount">Lock Amount</Label>
-                    <SubLabel>Balance: 230,000 ELYS</SubLabel>
+                    <SubLabel>Balance: {this.state.balance} ELYS</SubLabel>
                     <Field onChange={this.handleChange} name="lock_amount" value={this.state.amount} placeholder="0.0" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                   </FeatureItem>
                   </FeaturesGrid>

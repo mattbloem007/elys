@@ -204,7 +204,8 @@ let $ = {
     release, //releases locked ELYS and reward after lock period is up
     emergencyRelease, //releases locked ELYS, but forfeits reward before lock period is up
     transfer, //transfers locked ELYS to another user
-    _inc //increases number of days to test release. For testnet only
+    _inc, //increases number of days to test release. For testnet only
+    getElysBalance
 }
 
 export default $
