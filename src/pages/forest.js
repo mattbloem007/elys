@@ -50,6 +50,9 @@ class Forest extends React.Component {
     // if (provider) {
     //     this.getLockInfo()
     // }
+    if (window.web3.eth) {
+      this.getLockInfo()
+    }
   }
 
   encode = data => {
@@ -62,7 +65,7 @@ class Forest extends React.Component {
       let info = await $.lockTokensInfo()
       console.log("LOCK INFO: ", info)
       if (info.length == 0) {
-        info.append({tokenId: "", date: Date.now(), amount: "-", daysLeft: "N/A", reward: "-"})
+        info.push({tokenId: "", date: Date.now(), amount: "-", daysLeft: "N/A", reward: "-"})
       }
       else {
         info.map(i => {
