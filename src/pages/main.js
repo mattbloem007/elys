@@ -118,9 +118,9 @@ class Main extends Component {
 
               case 'forest':
                   body = (
-                      <div style={{display: 'flex', position: 'relative', minHeight: 700, width: 'auto'}}>
+                      <PageWrapper connected={this.connected}>
                         <Forest icon={iboga} title={'The Forest'} pair={'FTM-ELYS'} pairType={'Single token Lock'} lockTime={'12, 24, 36 Months'} return={'12%, 32%, 60%'} apr={'12% - 20%'} paidIn={'ELYS'}/>
-                      </div>
+                      </PageWrapper>
                   )
                   break
 
