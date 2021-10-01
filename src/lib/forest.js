@@ -91,13 +91,21 @@ const getTokenId = async () => {
 const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
     donation = donation || 0
+    console.log("donation", donation)
+    console.log("amount", amount)
     let acc = await getAccount()
+    console.log("acc", acc)
     let elys = await getElysContract()
+    console.log("elys", elys)
     let spender = getAddress('forestFactory')
+    console.log("spender", spender)
     let approved = await elys.allowance([acc,spender])
+    console.log("approved", approved)
     if(approved<amount*1e5) return {error: 'insufficient approval'}
     let tokenId = await getTokenId()
+    console.log("tokenId", tokenId)
     let factory = await getFactoryContract()
+    console.log("factory", factory)
     try{
         factory.lock([amount*1e5, lockDays, donation, tokenId])
     }
