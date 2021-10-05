@@ -19,7 +19,7 @@ class Contract {
         this.address = address;
         this._contract = new this.w3.eth.Contract(this.abi,this.address);
         this.methods = [];
-            
+            console.log("ADDRESS: ", this.address, this._contract)
         this.abi.forEach(async method => {
             if(method.name===undefined) return;
             this[method.name] = async (params,value) => {

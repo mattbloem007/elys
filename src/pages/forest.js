@@ -22,19 +22,26 @@ let style={
     marginLeft: 10
 }
 
+window.forest = $;
+
+
 class Forest extends React.Component {
 
   constructor(props) {
       super(props);
+
       var d = new Date(Date.now());
       this.state = {
           amount: "",
           errorMessage: false,
+          loading: false,
           donations: "",
           lockDays: "",
-          canLock: "",
+          canLock: false,
           transferAddress: "",
+          rewards: "0",
           balance: 0,
+          done: false,
           lockInfo: [{tokenId: "", date: d.toDateString(), amount: "-", daysLeft: "N/A", reward: "-"}]
       };
   }
@@ -54,7 +61,9 @@ class Forest extends React.Component {
     if (window.web3.eth) {
       this.getLockInfo()
       let bal = await $.getElysBalance()
-      this.setState({balance: bal})
+      bal = bal/1e5
+      let newBal = bal + ",000"
+      this.setState({balance: newBal})
     }
   }
 
@@ -67,12 +76,16 @@ class Forest extends React.Component {
    getLockInfo = async () => {
       let info = await $.lockTokensInfo()
       console.log("LOCK INFO: ", info)
+        var d = new Date();
       if (info.length == 0) {
         info.push({tokenId: "", date: Date.now(), amount: "-", daysLeft: "N/A", reward: "-"})
       }
       else {
         info.map(i => {
-          i.date = Date.now()
+          console.log(i.daysLeft)
+          d.setDate(d.getDate() - i.daysLeft)
+          i.date = d.getDate() + "-" + d.getMonth() + "-" + d.getFullYear()
+          d = new Date()
         })
       }
       this.setState({ lockInfo: info })
@@ -83,9 +96,29 @@ class Forest extends React.Component {
       console.log("info claim", info)
       if (info.daysLeft == 0) {
         $.release(info.tokenId)
+        .then((res) => {
+          if (res.error) {
+            console.log(res.error)
+          }
+          else {
+          //  return setCanLock(true)
+            console.log("SUCCESS", res)
+            this.setState({done: !this.state.done})
+          }
+        })
       }
       else if (info.daysLeft > 0) {
         $.emergencyRelease(info.tokenId)
+        .then((res) => {
+          if (res.error) {
+            console.log(res.error)
+          }
+          else {
+          //  return setCanLock(true)
+            console.log("SUCCESS", res)
+            this.setState({done: !this.state.done})
+          }
+        })
       }
     }
 
@@ -94,19 +127,39 @@ class Forest extends React.Component {
       console.log("info transfer", info, this.state.transferAddress)
       if (this.state.transferAddress != "") {
         $.transfer(info.tokenId, this.state.transferAddress)
+        .then((res) => {
+          if (res.error) {
+            console.log(res.error)
+          }
+          else {
+          //  return setCanLock(true)
+            console.log("SUCCESS", res)
+            this.setState({done: !this.state.done})
+          }
+        })
       }
     }
 
-   handleChange = (e) => {
+   handleChange = async (e) => {
       const {name, value} = e.target
       console.log("here", name, value)
       if (name == "lock_amount") {
       //  return setAmount(value)
         this.setState({amount: value})
+        if (this.state.lockDays != "") {
+          let rewards = await $.getReward(this.state.lockDays, value)
+          rewards = rewards/1e5 + ",000"
+          this.setState({rewards: rewards})
+        }
       }
       if (name == "deposit_duration") {
       //  return setLockDays(value)
         this.setState({lockDays: value})
+        if (this.state.amount != "") {
+          let rewards = await $.getReward(value, this.state.amount)
+          rewards = rewards + ",000"
+          this.setState({rewards: rewards})
+        }
       }
       if (name == "forest_contribution") {
       //  return setDonations(value)
@@ -119,24 +172,26 @@ class Forest extends React.Component {
 
      approveLock = (amount) => {
       console.log("approve", amount)
+      this.setState({loading: true})
       $.approve(amount)
       .then((res) => {
         if (res.error) {
           // return setError(true)
-          this.setState({errorMessage: true})
+          this.setState({errorMessage: true, loading: false})
         }
         else {
         //  return setCanLock(true)
-          this.setState({canLock: true})
+          this.setState({canLock: true, loading: false})
         }
       })
     }
 
      lockContract = (amount, lockDays, donations) => {
-      console.log("approve", amount)
-      $.lockElys(amount, lockDays, donations)
+      console.log("approve", amount, lockDays, donations)
+      $.lockElys(parseInt(amount), parseInt(lockDays), parseInt(donations))
       .then((res) => {
         console.log("res1", res)
+        this.setState({done: !this.state.done})
       })
     }
 
@@ -146,7 +201,7 @@ class Forest extends React.Component {
           <ForestContainer>
           <Column>
             <Formik
-              initialValues={{ lock_amount: this.state.amount, deposit_duration: "" }}
+              initialValues={{ lock_amount: this.state.amount, deposit_duration: 0,  }}
               onSubmit={(data, {resetForm, setFieldValue}) => {
                 console.log("DATA", data)
                 let encodedData = this.encode({
@@ -207,45 +262,45 @@ class Forest extends React.Component {
                 <Label>Deposit Duration</Label>
                   <Flex role="group" aria-labelledby="my-radio-group">
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="7 Days" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="6" />
                       7 Days
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="14 Days" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="14" />
                       14 Days
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="28 Days" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="28" />
                       28 Days
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="3 Months" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="91" />
                       3 Months
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="6 Months" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="183" />
                       6 Months
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="9 Months" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="274" />
                       9 Months
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="1 Year" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="365" />
                       1 Year
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="2 Years" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="731" />
                       2 Years
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="3 Years" />
+                      <Field onClick={this.handleChange} style={{marginBottom: "10px"}} type="radio" name="deposit_duration" value="1096" />
                       3 Years
                     </RadioLabel>
                   </Flex>
                   <ButtonContainer>
                     <Header>12% APR</Header>
-                    <SubLabel style={{float: "right"}}>Reward Amount: 3,000 ELYS</SubLabel>
+                    <SubLabel style={{float: "right"}}>Reward Amount: {this.state.rewards} ELYS</SubLabel>
                   </ButtonContainer>
                 </SacramentSymbolsContainer>
                 <br />
@@ -254,20 +309,22 @@ class Forest extends React.Component {
                 <Label>Forest Fund Contribution</Label>
                   <Flex role="group" aria-labelledby="my-radio-group">
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="forest_contribution" value="1" />
+                      <Field style={{marginBottom: "10px"}} onClick={this.handleChange} type="radio" name="forest_contribution" value="1" />
                         1% of rewards
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="forest_contribution" value="3" />
+                      <Field style={{marginBottom: "10px"}} onClick={this.handleChange} type="radio" name="forest_contribution" value="3" />
                       3% of rewards
                     </RadioLabel>
                     <RadioLabel>
-                      <Field style={{marginBottom: "10px"}} type="radio" name="forest_contribution" value="5" />
+                      <Field style={{marginBottom: "10px"}} onClick={this.handleChange} type="radio" name="forest_contribution" value="5" />
                       5% of rewards
                     </RadioLabel>
                   </Flex>
                   <ButtonContainer>
                     {
+                      this.state.loading ? <Submit style={{color: "white", float: "right"}}>...Processing...</Submit>
+                      :
                       this.state.canLock ?
                       <Submit onClick={() => {this.lockContract(this.state.amount, this.state.lockDays, this.state.donations) }} style={{color: "white", float: "right"}}>Lock</Submit>
                       :
@@ -307,7 +364,6 @@ class Forest extends React.Component {
                     <Titles>{info.daysLeft} Days</Titles>
                     <ButtonContainer>
                       <Submit onClick={() => {this.claimFunds(i) }} style={{color: "white", float: "right", marginRight: "10px"}}>CLAIM</Submit>
-                      <Submit onClick={() => {this.transferFunds(i) }} style={{color: "white", float: "right"}}>TRANSFER</Submit>
                     </ButtonContainer>
                   </ClaimContainer>
                 )
@@ -320,27 +376,6 @@ class Forest extends React.Component {
             <br/>
 
             <Label>Transfer</Label>
-            <ClaimContainer>
-              <Titles>DATE</Titles>
-              <Titles>ELYS VALUE</Titles>
-              <Titles>UNLOCKS IN</Titles>
-            </ClaimContainer>
-            {
-              this.state.lockInfo.map((info, i) => {
-                return (
-                  <ClaimContainer>
-                    <Titles>{info.date}</Titles>
-                    <Titles>{info.amount} ELYS</Titles>
-                    <Titles>{info.daysLeft} Days</Titles>
-                    <ButtonContainer>
-                      <Submit onClick={() => {this.claimFunds(i) }} style={{color: "white", float: "right", marginRight: "10px"}}>CLAIM</Submit>
-                      <Submit onClick={() => {this.transferFunds(i) }} style={{color: "white", float: "right"}}>TRANSFER</Submit>
-                    </ButtonContainer>
-                  </ClaimContainer>
-                )
-              })
-            }
-
             <Formik
               initialValues={{ transfer_address: "" }}
               onSubmit={(data, {resetForm, setFieldValue}) => {
@@ -374,14 +409,35 @@ class Forest extends React.Component {
                 </FeaturesGrid>
                 <ErrorMessage name="transfer_address" />
               </Flex2>
-              <ButtonContainer>
+              {/**<ButtonContainer>
                 <Submit onClick={() => {this.transferFunds(0) }} style={{color: "white"}}>TRANSFER</Submit>
-              </ButtonContainer>
+              </ButtonContainer>*/}
               <br/>
 
               </Form>
               )}
             </Formik>
+            <ClaimContainer>
+              <Titles>DATE</Titles>
+              <Titles>ELYS VALUE</Titles>
+              <Titles>UNLOCKS IN</Titles>
+            </ClaimContainer>
+            {
+              this.state.lockInfo.map((info, i) => {
+                return (
+                  <ClaimContainer>
+                    <Titles>{info.date}</Titles>
+                    <Titles>{info.amount} ELYS</Titles>
+                    <Titles>{info.daysLeft} Days</Titles>
+                    <ButtonContainer>
+                      <Submit onClick={() => {this.transferFunds(i) }} style={{color: "white", float: "right"}}>TRANSFER</Submit>
+                    </ButtonContainer>
+                  </ClaimContainer>
+                )
+              })
+            }
+
+
 
           </Column2>
           <Row>

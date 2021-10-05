@@ -20,7 +20,6 @@ Creating new locks:
 - First you need to call approve to allow the lock factory contract to move ELYS on the user's behalf:
         approve(amount)     (I'm multiplying by 1e5 so you can just put the amount in wothout worrying about decimals)
 - Once approved you can call lockElys(amount, lockDays, donation)      (donation is a percentage of the reward - so putting in 10 would mean 10% of the reward)
-
 */
 
 const testAddresses = {
@@ -55,6 +54,7 @@ const getReward = async (lockDays, amount) => {
 
 const approve = async (amount) => {
     let bal = await getElysBalance()
+    bal = bal/1e5
     if(bal<amount) return {error: 'insufficient ELYS'}
     let elys = await getElysContract()
     try{
@@ -85,7 +85,7 @@ const getElysBalance = async () => {
 const getTokenId = async () => {
     let factory = await getFactoryContract()
     let counter = await factory.tokenIdCounter()
-    return counter + 1
+    return parseInt(counter) + 1
 }
 
 const lockElys = async (amount, lockDays, donation) => {
@@ -105,7 +105,7 @@ const lockElys = async (amount, lockDays, donation) => {
     let tokenId = await getTokenId()
     console.log("tokenId", tokenId)
     let factory = await getFactoryContract()
-    console.log("factory", factory)
+    console.log("factory", factory, (amount*1e5), lockDays, donation, tokenId)
     try{
         await factory.lock([amount*1e5, lockDays, donation, tokenId])
     }
@@ -131,13 +131,18 @@ const lockTokenIDs = async () => {
 
 const lockTokenInfo = async (tokenId) => {
     let lock = await getLock()
-    let {amount,reward,daysLeft} = await lock.lockInfo([tokenId])
+    let info = await lock.lockInfo([tokenId])
+    console.log("ii", info)
+    let amount = info[0]
+    let reward = info[1]
+    let daysLeft = info[2]
+  //I  let {amount,reward,daysLeft} = await lock.lockInfo([tokenId])
+
     return {tokenId,amount:amount/1e5,reward:reward/1e5,daysLeft}
 }
 
 const lockTokensInfo = async () => {
     let ar = await lockTokenIDs()
-    console.log("ar", ar)
     let arInfo = []
     for(var i=0;i<ar.length;i++){
         let info = await lockTokenInfo(ar[i])
@@ -213,7 +218,12 @@ let $ = {
     emergencyRelease, //releases locked ELYS, but forfeits reward before lock period is up
     transfer, //transfers locked ELYS to another user
     _inc, //increases number of days to test release. For testnet only
-    getElysBalance
-}
+    getElysBalance,
+    getFactoryContract,
+    getElysContract,
+    getTokenId
+};
+
+
 
 export default $
