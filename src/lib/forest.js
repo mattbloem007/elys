@@ -39,6 +39,12 @@ const getFactoryContract = async () => new Contract('forestFactory',getAddress('
 
 let _lock = null
 
+const getLeft = async () => {
+    let elys = await getElysContract()
+    let bal = await elys.balanceOf([getAddress('forestFactory')])
+    return bal
+}
+
 const getLock = async () => {
     if(_lock) return _lock
     let factory = await getFactoryContract()
@@ -69,15 +75,15 @@ const approve = async (amount) => {
 
 const getAccount = async () => {
     let accs = await window.web3.eth.getAccounts();
+    console.log(accs)
     let acc = accs[0];
     return acc
 }
 
 const getElysBalance = async () => {
     let acc = await getAccount()
+    console.log('acc: ' + acc)
     let elys = await getElysContract()
-    console.log("account", getNetwork())
-    console.log("Network ", window.ethereum.networkVersion)
     let bal = await elys.balanceOf([acc])
     return bal
 }
@@ -91,21 +97,16 @@ const getTokenId = async () => {
 const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
     donation = donation || 0
-    console.log("donation", donation)
-    console.log("amount", amount)
+   
     let acc = await getAccount()
-    console.log("acc", acc)
     let elys = await getElysContract()
-    console.log("elys", elys)
     let spender = getAddress('forestFactory')
-    console.log("spender", spender)
     let approved = await elys.allowance([acc,spender])
-    console.log("approved", approved)
     if(approved<amount*1e5) return {error: 'insufficient approval'}
     let tokenId = await getTokenId()
-    console.log("tokenId", tokenId)
     let factory = await getFactoryContract()
-    console.log("factory", factory, (amount*1e5), lockDays, donation, tokenId)
+    console.log([amount*1e5, lockDays, donation, tokenId])
+    
     try{
         await factory.lock([amount*1e5, lockDays, donation, tokenId])
     }
@@ -114,6 +115,7 @@ const lockElys = async (amount, lockDays, donation) => {
     }
     await wait(20000)
     return {success: true}
+    
 }
 
 const lockTokenIDs = async () => {
@@ -221,7 +223,8 @@ let $ = {
     getElysBalance,
     getFactoryContract,
     getElysContract,
-    getTokenId
+    getTokenId,
+    getLeft
 };
 
 
