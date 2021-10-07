@@ -188,6 +188,14 @@ const transfer = async (tokenId, to) => {
     return {success: true}
 }
 
+const getLeft = async () => {
+    let elys = await getElysContract()
+    console.log("ELYS", elys)
+    let bal = await elys.balanceOf([getAddress('forestFactory')])
+    console.log("BAL", bal)
+    return bal
+}
+
 
 //This function increases the number of days so you can test the lock release. For testnet only
 const _inc = async (days) => {
@@ -221,7 +229,8 @@ let $ = {
     getElysBalance,
     getFactoryContract,
     getElysContract,
-    getTokenId
+    getTokenId,
+    getLeft
 };
 
 

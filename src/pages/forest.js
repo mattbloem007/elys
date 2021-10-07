@@ -42,6 +42,10 @@ class Forest extends React.Component {
           rewards: "0",
           balance: 0,
           done: false,
+          showTransfer: false,
+          apr: "0",
+          factoryBalance: 0,
+          lockedBal: 0,
           lockInfo: [{tokenId: "", date: d.toDateString(), amount: "-", daysLeft: "N/A", reward: "-"}]
       };
   }
@@ -61,9 +65,12 @@ class Forest extends React.Component {
     if (window.web3.eth) {
       this.getLockInfo()
       let bal = await $.getElysBalance()
-      bal = bal/1e5
-      let newBal = bal + ",000"
-      this.setState({balance: newBal})
+      let facBal = await $.getLeft()
+      bal = Math.trunc(bal/1e5) + ",000"
+      facBal = Math.trunc(facBal/1e5) + ",000"
+      let lockBal = 1000000 - parseInt(facBal)
+      lockBal = lockBal + ",000"
+      this.setState({balance: bal, factoryBalance: facBal, lockedBal: lockBal})
     }
   }
 
@@ -140,6 +147,10 @@ class Forest extends React.Component {
       }
     }
 
+    includeTransfer = () => {
+      this.setState({showTransfer: !this.state.showTransfer})
+    }
+
    handleChange = async (e) => {
       const {name, value} = e.target
       console.log("here", name, value)
@@ -148,17 +159,59 @@ class Forest extends React.Component {
         this.setState({amount: value})
         if (this.state.lockDays != "") {
           let rewards = await $.getReward(this.state.lockDays, value)
-          rewards = rewards/1e5 + ",000"
+          rewards = Math.trunc(rewards/1e5) + ",000"
           this.setState({rewards: rewards})
         }
       }
       if (name == "deposit_duration") {
       //  return setLockDays(value)
+        let apr = "0";
         this.setState({lockDays: value})
+        switch(value) {
+          case "6":
+            apr = "4"
+          break;
+
+          case "14":
+          apr = "5"
+          break;
+
+          case "28":
+          apr = "6"
+          break;
+
+          case "91":
+          apr = "9"
+          break;
+
+          case "183":
+          apr = "12"
+          break;
+
+          case "274":
+          apr = "15"
+          break;
+
+          case "365":
+          apr = "20"
+          break;
+
+          case "731":
+          apr = "23"
+          break;
+
+          case "1096":
+          apr = "26"
+          break;
+
+        }
         if (this.state.amount != "") {
           let rewards = await $.getReward(value, this.state.amount)
           rewards = rewards + ",000"
-          this.setState({rewards: rewards})
+          this.setState({rewards: rewards, apr: apr})
+        }
+        else {
+          this.setState({apr: apr})
         }
       }
       if (name == "forest_contribution") {
@@ -199,6 +252,9 @@ class Forest extends React.Component {
       return (
         <div style={{display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: 40}}>
           <ForestContainer>
+          <TopText>
+            <Label style={{textAlign: "center", alignItems:"center", marginBottom: "20px"}}>{this.state.lockedBal} ELYS Locked in the Forest</Label>
+          </TopText>
           <Column>
             <Formik
               initialValues={{ lock_amount: this.state.amount, deposit_duration: 0,  }}
@@ -227,19 +283,14 @@ class Forest extends React.Component {
                 data-netlify="true"
                 data-netlify-honeypot="bot-field"
               >
-              <img src={this.props.icon} alt='icon' width={30} />
-              <div style={{
-                  display: 'inline-block',
-                  color: orange,
-                  verticalAlign: 'top',
-                  marginTop: 3,
-                  marginLeft: 20,
-                  fontSize: 20,
-                  marginBottom: 20
-              }}>{this.props.title}</div>
+              <ImageandTitle>
+                <SacramentSymbol src={this.props.icon} />
+                <FeatureTitle>{this.props.title}</FeatureTitle>
+              </ImageandTitle>
+
               <div style={style}>Rewards locked ELYS</div>
               <div style={style}>Your rewards are paid in ELYS</div>
-              <div style={style}>Buy ELYS at ZooDex</div>
+              <a href="https://dex.zoocoin.cash/orders/market?inputCurrency=FTM&outputCurrency=0xd89cc0d2A28a769eADeF50fFf74EBC07405DB9Fc" style={{color: "white", fontWeight: "bold", padding: '5px', fontSize: '12px',marginLeft: '10px'}}>Buy ELYS here</a>
 
 
 
@@ -249,7 +300,7 @@ class Forest extends React.Component {
                 <Flex>
                   <FeaturesGrid>
                   <FeatureItem>
-                    <Label htmlFor="lock_amount">Lock Amount</Label>
+                    <Label style={{marginTop: "20px"}} htmlFor="lock_amount">Lock Amount</Label>
                     <SubLabel>Balance: {this.state.balance} ELYS</SubLabel>
                     <Field onChange={this.handleChange} name="lock_amount" value={this.state.amount} placeholder="0.0" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                   </FeatureItem>
@@ -299,7 +350,7 @@ class Forest extends React.Component {
                     </RadioLabel>
                   </Flex>
                   <ButtonContainer>
-                    <Header>12% APR</Header>
+                    <Header>{this.state.apr}% APR</Header>
                     <SubLabel style={{float: "right"}}>Reward Amount: {this.state.rewards} ELYS</SubLabel>
                   </ButtonContainer>
                 </SacramentSymbolsContainer>
@@ -357,13 +408,18 @@ class Forest extends React.Component {
             </ClaimContainer>
             {
               this.state.lockInfo.map((info, i) => {
+                let button = <Submit onClick={() => {this.claimFunds(i) }} style={{color: "white", float: "right", marginRight: "10px"}}>CLAIM</Submit>
+
+                if (info.daysLeft > 0) {
+                  button = <Submit onClick={() => {this.transferFunds(i) }} style={{color: "white", float: "right", marginRight: "10px"}}>TRANSFER</Submit>
+                }
                 return (
                   <ClaimContainer>
                     <Titles>{info.date}</Titles>
                     <Titles>{info.amount} ELYS</Titles>
                     <Titles>{info.daysLeft} Days</Titles>
                     <ButtonContainer>
-                      <Submit onClick={() => {this.claimFunds(i) }} style={{color: "white", float: "right", marginRight: "10px"}}>CLAIM</Submit>
+                      {button}
                     </ButtonContainer>
                   </ClaimContainer>
                 )
@@ -374,9 +430,11 @@ class Forest extends React.Component {
               <Submit style={{color: "white", float: "right"}}>TRANSFER</Submit>
             </ButtonContainer>*/}
             <br/>
-
-            <Label>Transfer</Label>
-            <Formik
+            <LabelCenter onClick={() => this.includeTransfer()}>Transfer</LabelCenter>
+            {
+              this.state.showTransfer ?
+              <div>
+              <Formik
               initialValues={{ transfer_address: "" }}
               onSubmit={(data, {resetForm, setFieldValue}) => {
                   fetch("/", {
@@ -417,6 +475,7 @@ class Forest extends React.Component {
               </Form>
               )}
             </Formik>
+
             <ClaimContainer>
               <Titles>DATE</Titles>
               <Titles>ELYS VALUE</Titles>
@@ -436,20 +495,21 @@ class Forest extends React.Component {
                 )
               })
             }
-
-
-
-          </Column2>
+          </div>
+          :
+          null
+        }
+        </Column2>
           <Row>
             <div style={{width: "100%", alignItems: "center", display: "flex", justifyContent: "center"}}>
               <a href="#" style={{color: "white", fontWeight: "bold"}}>Emergency unlock ? click here</a>
             </div>
           </Row>
           <BottomText>
-            <Header>The Patch is 50% planted</Header>
+            <Label style={{textAlign: "center", alignItems:"center", marginTop: "20px"}}>{this.state.rewards} ELYS earned as rewards</Label>
             <FeaturesGrid2>
             <FeatureItem>
-              <FeatureText>Once full the patch will be open but no further rewards issued</FeatureText>
+              <Label style={{textAlign: "center", alignItems:"center"}}>{this.state.factoryBalance} ELYS available to be claimed</Label>
             </FeatureItem>
             </FeaturesGrid2>
           </BottomText>
@@ -462,13 +522,6 @@ class Forest extends React.Component {
 export default Forest
 
 
-// const ForestPage = (props) => {
-//     return (<div style={{display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: 40}}>
-//         <Forest icon={iboga} title={'The Forest'} pair={'FTM-ELYS'} pairType={'Single token Lock'} lockTime={'12, 24, 36 Months'} return={'12%, 32%, 60%'} apr={'12% - 20%'} paidIn={'ELYS'}/>
-//
-//     </div>)
-// }
-
 const ForestContainer = styled.div`
   border: solid 2px #ec7019;
   border-radius: 10px;
@@ -478,11 +531,36 @@ const ForestContainer = styled.div`
   vertical-align: top;
 `
 
+const SacramentSymbol = styled.img`
+  height: 40px;
+  margin-bottom: 10px;
+  padding-right: 30px;
+`
+
+const ImageandTitle = styled.div`
+  display: flex;
+  justify-content: left;
+  align-items: flex-end;
+  flex-direction: row;
+  height: 60px;
+`
+
+//Position relative is a bit of a hack to align
+const FeatureTitle = styled.h5`
+  color: #ec7019;
+  letter-spacing: 0px;
+  line-height: 30px;
+  margin-bottom: 10px;
+  font-size: 25px;
+  position: relative;
+  top: -5px;
+`
+
 const Submit = styled.button`
 width: 167px;
 height: 32px;
 float: right;
-background: #ED6F1B 0% 0% no-repeat padding-box;
+background: #ED6F1B;
 border-radius: 45px;
 `
 
@@ -491,6 +569,7 @@ const ButtonContainer = styled.div`
   align-items: flex-end;
   justify-content: center;
   flex-direction: row;
+  width: 100%;
 `
 
 const ClaimContainer = styled.div`
@@ -507,25 +586,31 @@ const Titles = styled.div`
 
 const Column = styled.div`
   border-right: solid 2px #ec7019;
-  padding: 10px;
+  padding: 50px;
   font-weight: bold;
   vertical-align: top;
 `
 
 const Column2 = styled.div`
   grid-column-start: 2;
-  grid-row-start: 1;
+  grid-row-start: 2;
   padding: 10px;
 `
 const Row = styled.div`
   grid-column-start: 2;
-  grid-row-start: 2;
+  grid-row-start: 3;
   padding: 10px;
 `
 
 const BottomText = styled.div`
   text-align: center;
-  grid-row: 3;
+  grid-row: 4;
+  grid-column: 1 / 4;
+`
+
+const TopText = styled.div`
+  text-align: center;
+  grid-row: 1;
   grid-column: 1 / 4;
 `
 
@@ -591,7 +676,25 @@ color: #FFFFFF;
 display: flex;
 flex-direction: column;
 align-items: flex-start;
-font-size: xx-large;
+line-height: 30px;
+margin-bottom: 10px;
+font-size: 25px;
+color: #ED6F1B;
+font-weight: bold;
+margin-bottom: 5px;
+`
+
+const LabelCenter = styled.label`
+width: 100%;
+text-align: left;
+letter-spacing: 0px;
+color: #FFFFFF;
+display: flex;
+flex-direction: column;
+align-items: center;
+line-height: 30px;
+margin-bottom: 10px;
+font-size: 25px;
 color: #ED6F1B;
 font-weight: bold;
 margin-bottom: 5px;
@@ -602,7 +705,7 @@ width: 100%;
 text-align: left;
 letter-spacing: 0px;
 color: #FFFFFF;
-font-size: medium;
+font-size: 12px;
 color: #ffffff;
 margin-bottom: 5px;
 `
