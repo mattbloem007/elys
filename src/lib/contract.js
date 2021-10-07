@@ -28,9 +28,10 @@ class Contract {
                 if(params===undefined) params=[];
                 if( params.length!==method.inputs.length) throw new Error("Incorrect number of parameters");
                 let func = await this._contract.methods[_method](...params);
-                let gas = 300000;//await func.estimateGas();
+                let gas = 500000;//await func.estimateGas();
                 let gasPrice = await this.w3.eth.getGasPrice();
                 let options = {from:_acc, gas: gas, gasPrice: gasPrice}; //
+                console.log(options)
                 if(method.stateMutability==="payable"){
                     if(value===undefined || value===0) throw new Error("value needs to be set for payable methods");
                     options.value = value;
