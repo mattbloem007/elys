@@ -31,7 +31,7 @@ const wait = (tm) => new Promise(r=>setTimeout(()=>r(),tm))
 
 const getNetwork = () => (window.ethereum.networkVersion === '250')?'main':(window.ethereum.networkVersion === '4002')?'test':'unknown'
 
-const getAddress = (nm) => (getNetwork()=='main')?contractAddress[nm]:(getNetwork()=='test')?testAddresses[nm]:null
+const getAddress = (nm) => (getNetwork()==='main')?contractAddress[nm]:(getNetwork()==='test')?testAddresses[nm]:null
 
 const getElysContract = async () =>  new Contract('elys',getAddress('elys'))
 
@@ -89,9 +89,12 @@ const getElysBalance = async () => {
 }
 
 const getTokenId = async () => {
+    /*
     let factory = await getFactoryContract()
     let counter = await factory.tokenIdCounter()
-    return parseInt(counter) + 1
+    return parseInt(counter) + 2
+    */
+    return parseInt(Math.random(Date.now())*10000000000)
 }
 
 const lockElys = async (amount, lockDays, donation) => {
@@ -193,7 +196,7 @@ const transfer = async (tokenId, to) => {
 
 //This function increases the number of days so you can test the lock release. For testnet only
 const _inc = async (days) => {
-    if(getNetwork()!=test){
+    if(getNetwork()!==test){
         alert("This function is for testnet only")
         return
     }
