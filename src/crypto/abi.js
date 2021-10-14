@@ -1142,6 +1142,29 @@ const abi = {
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "getStats",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -1194,6 +1217,11 @@ const abi = {
             ],
             "name": "lockInfo",
             "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                },
                 {
                     "internalType": "uint256",
                     "name": "",
