@@ -202,6 +202,10 @@ class Forest extends React.Component {
         let lockTokensInfo = await forest.lockTokensInfo()
         console.log(lockTokensInfo)
         this.setState({lockTokensInfo})
+        let amountLeft = await forest.getLeft()
+        let balance = await forest.getElysBalance()
+        let stats = await forest.getStats()
+        this.setState({stats,amountLeft,balance})
     }
     
     render = () => {
