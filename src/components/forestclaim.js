@@ -77,7 +77,7 @@ let Lock = (props) => {
     let styleLeft = Object.assign({},style)
     styleLeft.width = 60
 
-    let daysLeft = (props.daysLeft>0)?props.daysLeft.toString:'Now'
+    let daysLeft = (props.daysLeft>0)?props.daysLeft.toString():'Now'
     if(daysLeft!=='Now') daysLeft += ' day'
     if(props.daysLeft>1) daysLeft += 's'
 
