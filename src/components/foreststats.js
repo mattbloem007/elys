@@ -37,7 +37,7 @@ const Stats = (props) => {
             toClaim: 0,
             locksCreated: 0
     */
-    let locks = (props.stats.totalLocked>1)?props.stats.totalLocked + 'locks created':'1 lock created'
+    let locks = (props.stats.totalLocked>1)?props.stats.locksCreated + ' locks created':'1 lock created'
     let statStyle={
         color: orange,
         textAlign: 'center',
