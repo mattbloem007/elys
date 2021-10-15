@@ -87,7 +87,7 @@ let ForestLock = (props) => {
                 />
             </div>
             <div style={{color: '#ffffff', fontSize: 12, marginTop: 10, width: (isMobile)?180:250}}>
-                You have {(props.balance===-1)?'loading..':formatElys(trimDec(props.balance/1e5,3))} available
+                You have {(props.balance===-1)?'loading..':formatElys(trimDec(props.balance/1e5,1))} available
             </div>
             
             <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Deposit Duration</div>
@@ -128,7 +128,7 @@ let ForestLock = (props) => {
                 </div>
                 <div style={{display: 'block', color: '#fffffff', textAlign: 'left', verticalAlign: 'bottom', width: 200}}>
                     <div>Total Reward Amount</div>
-                    <div style={{fontSize: 18, marginTop: 5}}>{formatElys(trimDec(props.reward,3))}</div>
+                    <div style={{fontSize: 18, marginTop: 5}}>{formatElys(trimDec(props.reward,1))}</div>
                 </div>
                 <div style={{marginTop: 20}}>
                 <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, width: 200}}>Forest Rescue <span style={{position: 'relative', top: -5, left: -5}}>

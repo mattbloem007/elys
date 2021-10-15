@@ -115,7 +115,7 @@ let Lock = (props) => {
     return (
             <div style={{marginTop: 10}}>
                 <div style={style}>{formatDate(created)}</div>
-                <div style={styleAmount}>{formatElys(trimDec(parseFloat(props.amount) + parseFloat(props.reward),3))}</div>
+                <div style={styleAmount}>{formatElys(trimDec(parseFloat(props.amount) + parseFloat(props.reward),1))}</div>
                 <div style={styleLeft}>{daysLeft}</div>
                 <div style={styleButton}>{button}</div>
             </div>
@@ -142,7 +142,7 @@ let Transfer = (props) => {
             <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>Transfer</div>
             <img src={iboga} alt="" width={40} />
         </div>
-        <div style={{textAlign: 'center'}}>{formatElys(trimDec(parseFloat(lock.amount) + parseFloat(lock.reward),3))}</div>
+        <div style={{textAlign: 'center'}}>{formatElys(trimDec(parseFloat(lock.amount) + parseFloat(lock.reward),1))}</div>
         <div style={{textAlign: 'center', marginTop: 7}}>{lockedOn}</div>
         <div style={{color: orange, textAlign: 'center', marginTop: 10}}>Address to transfer to:</div>
         <div style={{textAlign: 'center'}}>
