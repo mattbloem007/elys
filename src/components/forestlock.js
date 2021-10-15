@@ -124,7 +124,7 @@ let ForestLock = (props) => {
             <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, marginBottom: 10, width: 200}}>Reward Calculation</div>
                 <div style={{position: 'relative', top: -22, fontColor: '#ffffff', marginTop: 30, display: 'block', width: 200}}>
                     {props.apr}% APR <span style={{position: 'relative', top: -5, left: -5}}>
-                    <Info>Some info about APR</Info></span>
+                    <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span>
                 </div>
                 <div style={{display: 'block', color: '#fffffff', textAlign: 'left', verticalAlign: 'bottom', width: 200}}>
                     <div>Total Reward Amount</div>
@@ -132,7 +132,7 @@ let ForestLock = (props) => {
                 </div>
                 <div style={{marginTop: 20}}>
                 <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, width: 200}}>Forest Rescue <span style={{position: 'relative', top: -5, left: -5}}>
-                    <Info>Some info about Forest Fund</Info></span>
+                    <Info>A percentage of your rewards goes to preventing deforestation.</Info></span>
                 </div>
                 <div style={{
                     minWidth: 200,
