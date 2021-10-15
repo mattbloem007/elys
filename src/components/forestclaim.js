@@ -232,12 +232,12 @@ class ForestClaim extends React.Component {
         <div style={{ maxWidth: 500, overflow: 'scroll', marginBottom: 20, marginLeft: (isMobile)?0:20 }}>
             <div style={{color: orange, fontSize: 16}}>
                 <div style={{display: 'inline-block', width: 60, color: orange, fontWeight: 'bold', marginLeft: 20}}>Created</div>
-                <div style={{display: 'inline-block', width: 120, color: orange, fontWeight: 'bold', marginLeft: 30}}>Amount</div>
-                <div style={{display: 'inline-block', width: 90, color: orange, fontWeight: 'bold', marginLeft: 20}}>Claimable in</div>
+                <div style={{display: 'inline-block', width: 120, color: orange, fontWeight: 'bold', marginLeft: 33}}>Amount</div>
+                <div style={{display: 'inline-block', width: 95, color: orange, fontWeight: 'bold', marginLeft: 20}}>Claim in</div>
             </div>
             {arClaims}
         </div>
-       ):(<div style={{marginTop: 20, textAlign: 'center', marginBottom: 30}}>You have no locked ELYS</div>)
+       ):(<div style={{marginTop: 20, textAlign: 'center', marginBottom: 35}}>You have no locked ELYS</div>)
 
        let transfer = (this.state.transferring>-1)?(
            <Transfer tokenId={this.state.transferring} locks={this.props.lockTokensInfo} transfer={this.transfer} to={this.state.transferTo}/>
