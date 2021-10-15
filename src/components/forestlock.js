@@ -92,7 +92,7 @@ let ForestLock = (props) => {
             
             <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Deposit Duration</div>
             <div style={{
-                width: 110,
+                width: 150,
                 display: 'block',
                 paddingBottom: 10,
                 borderBottom: 'solid 2px ' + orange
@@ -102,7 +102,7 @@ let ForestLock = (props) => {
                 <Radio onChange={props.selectDuration} value={'28 days'} selected={props.duration} />
             </div>
             <div style={{
-                width: 110,
+                width: 150,
                 display: 'block',
                 borderBottom: 'solid 2px ' + orange,
                 paddingBottom: 10
@@ -112,7 +112,7 @@ let ForestLock = (props) => {
                 <Radio onChange={props.selectDuration} value={'9 months'} selected={props.duration} />
             </div>
             <div style={{
-                width: 110,
+                width: 150,
                 display: 'block'
             }}>
                 <Radio onChange={props.selectDuration} value={'1 year'} selected={props.duration} />

@@ -233,7 +233,7 @@ class ForestClaim extends React.Component {
             <div style={{color: orange, fontSize: 16}}>
                 <div style={{display: 'inline-block', width: 60, color: orange, fontWeight: 'bold', marginLeft: 20}}>Created</div>
                 <div style={{display: 'inline-block', width: 120, color: orange, fontWeight: 'bold', marginLeft: 30}}>Amount</div>
-                <div style={{display: 'inline-block', width: 90, color: orange, fontWeight: 'bold', marginLeft: 20}}>Claimable</div>
+                <div style={{display: 'inline-block', width: 90, color: orange, fontWeight: 'bold', marginLeft: 20}}>Claimable in</div>
             </div>
             {arClaims}
         </div>
