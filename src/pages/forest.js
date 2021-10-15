@@ -92,15 +92,15 @@ class Forest extends React.Component {
                 perc = 15
                 lockDays = 9*28
                 break
-            case '1 YEAR':
+            case '1 year':
                 perc = 20
                 lockDays = 365
                 break
-            case '2 YEARS':
+            case '2 years':
                 perc = 23
                 lockDays = 2 * 365
                 break
-            case '3 YEARS':
+            case '3 years':
                 perc = 26
                 lockDays = 3 * 365
                 break
