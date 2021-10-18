@@ -3,7 +3,7 @@ import iboga from '../images/iboga-white-icon.png'
 const orange = '#ec7019'
 const cream = '#facbac'
 
-let formatElys = (s) => {    
+let formatElys = (s) => {
     let splitDec = s.split('.')
     console.log('left: ' + splitDec[0])
     let ar = []
@@ -17,7 +17,7 @@ let formatElys = (s) => {
     let front = ar.reverse().join(',')
     let back = (splitDec.length>1)?'.' + splitDec[1]:''
     return front + back + ' ELYS'
-    
+
    //return s + ' ELYS'
 }
 
@@ -56,8 +56,8 @@ const Stats = (props) => {
             <div style={statStyle}>{locks}</div>
             <div style={statStyle}>{formatElys(trimDec(props.stats.totalLocked/1e5,1))} locked in the Forest</div>
             <div style={statStyle}>{formatElys(trimDec(props.stats.totalRewards/1e5,1))} earned as rewards</div>
-            <div style={statStyle}>{formatElys(trimDec(props.stats.toClaim/1e5,1))} available to be claimed</div>
-            <div style={infoStyle}>If no rewards are available to be claimed the forest will still be open for staking</div>
+            <div style={statStyle}>{formatElys(trimDec(props.stats.toClaim/1e5,1))} available to be earned</div>
+            <div style={infoStyle}>If no rewards are available to be earned the forest will still be open for staking</div>
         </div>
     )
 }

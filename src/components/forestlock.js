@@ -1,11 +1,14 @@
 import React from 'react';
-import Info from './info' 
+import Info from './info'
 import iboga from '../images/iboga-white-icon.png'
 import {isMobile} from 'react-device-detect';
+import styled from "styled-components"
+import { Container, Section } from "../global"
+
 const orange = '#ec7019'
 const cream = '#facbac'
 
-let formatElys = (s) => {    
+let formatElys = (s) => {
     let splitDec = s.split('.')
     console.log('left: ' + splitDec[0])
     let ar = []
@@ -19,7 +22,7 @@ let formatElys = (s) => {
     let front = ar.reverse().join(',')
     let back = (splitDec.length>1)?'.' + splitDec[1]:''
     return front + back + ' ELYS'
-    
+
    //return s + ' ELYS'
 }
 
@@ -32,10 +35,14 @@ let trimDec = (n,dec) => {
 }
 
 let Radio = (props) => (
-    <div style={{position: 'relative', left: -20, display: 'block', textAlign: 'left', cursor: 'pointer', marginTop: 10, marginLeft: 20}}  onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}}>
-        <input type="radio" value={props.value} name={props.name} checked={(props.value===props.selected)} onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}} style={{cursor: 'pointer'}}/>
-        <div style={{color: '#ffffff', display: 'inline-block', marginLeft: 10}}>{props.value}</div>
-    </div>
+    <Label>
+			<Input type="radio" value={props.value} name={props.name} checked={(props.value===props.selected)} onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}}/>
+			<Span>{props.value}</Span>
+		</Label>
+    // <div style={{position: 'relative', left: -20, display: 'block', textAlign: 'left', cursor: 'pointer', marginTop: 10, marginLeft: 20}}  onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}}>
+    //     <input type="radio" value={props.value} name={props.name} checked={(props.value===props.selected)} onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}} style={{cursor: 'pointer'}}/>
+    //     <div style={{color: '#ffffff', display: 'inline-block', marginLeft: 10}}>{props.value}</div>
+    // </div>
 )
 
 let ForestLock = (props) => {
@@ -70,7 +77,7 @@ let ForestLock = (props) => {
             <img src={iboga} alt="" width={40} />
         </div>
         <div style={{display: 'inline-block', marginLeft: (isMobile)?20:30}}>
-            
+
             <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Lock Amount</div>
             <div style={{marginTop: 5}}>
                 <input onChange={props.lockAmountChange} value={props.lockAmount} defaultValue={0.0} type={'text'}
@@ -89,7 +96,7 @@ let ForestLock = (props) => {
             <div style={{color: '#ffffff', fontSize: 12, marginTop: 10, width: (isMobile)?180:250}}>
                 You have {(props.balance===-1)?'loading..':formatElys(trimDec(props.balance/1e5,1))} available
             </div>
-            
+
             <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Deposit Duration</div>
             <div style={{
                 width: 150,
@@ -152,3 +159,50 @@ let ForestLock = (props) => {
 }
 
 export default ForestLock
+
+const Label = styled.label`
+  display: flex;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0.375em;
+`
+
+const Input = styled.input`
+position: absolute;
+		left: -9999px;
+		&:checked + span {
+			background-color: #facbac;
+      opacity: 0.9;
+			&:before {
+				box-shadow: inset 0 0 0 0.4375em #ec7019;
+			}
+		}
+`
+
+const Span = styled.span`
+display: flex;
+		align-items: center;
+		padding: 0.375em 0.75em 0.375em 0.375em;
+		border-radius: 99em;
+		transition: 0.25s ease;
+    font-weight: bold;
+    font-size: 20px;
+		&:hover {
+			background-color: #facbac;
+      opacity: 0.9;
+		}
+		&:before {
+			display: flex;
+			flex-shrink: 0;
+			content: "";
+			background-color: #251D14;
+			width: 1.5em;
+			height: 1.5em;
+			border-radius: 50%;
+			margin-right: 0.375em;
+			transition: 0.25s ease;
+			box-shadow: inset 0 0 0 0.125em #ec7019;
+		}
+`
