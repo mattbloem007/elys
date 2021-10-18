@@ -71,35 +71,35 @@ let ForestLock = (props) => {
 
     return (
     <div style={{border: 'solid 2px ' + orange, display: 'block', paddingTop: 20, borderRadius: 20, width: '98%', position: 'relative'}}>
-        <div style={{color: orange, fontWeight: 'bold', fontSize: 20, textAlign: 'center', marginLeft: 20}}>
+        <div style={{color: orange, fontWeight: 'bold', fontSize: 26, textAlign: 'center', marginLeft: 20}}>
             <img src={iboga} alt="" width={40} />
             <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>Lock in Forest</div>
             <img src={iboga} alt="" width={40} />
         </div>
         <div style={{display: 'inline-block', marginLeft: (isMobile)?20:30}}>
 
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Lock Amount</div>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 24, marginTop: 20}}>Lock Amount</div>
             <div style={{marginTop: 5}}>
                 <input onChange={props.lockAmountChange} value={props.lockAmount} defaultValue={0.0} type={'text'}
                     style={{
                         border: 'solid 1px ' + orange,
                         backgroundColor: cream,
                         borderRadius: 10,
-                        height: 20,
+                        height: 26,
                         padding: 3,
-                        width: 150,
+                        width: 195,
                         paddingLeft: 10,
                         outline: 'transparent'
                     }}
                 />
             </div>
-            <div style={{color: '#ffffff', fontSize: 12, marginTop: 10, width: (isMobile)?180:250}}>
+            <div style={{color: '#ffffff', fontSize: 14, marginTop: 10, width: (isMobile)?180:250}}>
                 You have {(props.balance===-1)?'loading..':formatElys(trimDec(props.balance/1e5,1))} available
             </div>
 
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Deposit Duration</div>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 24, marginTop: 20}}>Deposit Duration</div>
             <div style={{
-                width: 150,
+                width: 195,
                 display: 'block',
                 paddingBottom: 10,
                 borderBottom: 'solid 2px ' + orange
@@ -109,7 +109,7 @@ let ForestLock = (props) => {
                 <Radio onChange={props.selectDuration} value={'28 days'} selected={props.duration} />
             </div>
             <div style={{
-                width: 150,
+                width: 195,
                 display: 'block',
                 borderBottom: 'solid 2px ' + orange,
                 paddingBottom: 10
@@ -119,7 +119,7 @@ let ForestLock = (props) => {
                 <Radio onChange={props.selectDuration} value={'9 months'} selected={props.duration} />
             </div>
             <div style={{
-                width: 150,
+                width: 195,
                 display: 'block'
             }}>
                 <Radio onChange={props.selectDuration} value={'1 year'} selected={props.duration} />
@@ -128,17 +128,17 @@ let ForestLock = (props) => {
             </div>
         </div>
         <div style={{display: 'inline-block', verticalAlign: 'top', paddingTop: 2, marginLeft: 20}}>
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, marginBottom: 10, width: 200}}>Reward Calculation</div>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 24, marginTop: 20, marginBottom: 10, width: 230}}>Reward Calculation</div>
                 <div style={{position: 'relative', top: -22, fontColor: '#ffffff', marginTop: 30, display: 'block', width: 200}}>
                     {props.apr}% APR <span style={{position: 'relative', top: -5, left: -5}}>
                     <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span>
                 </div>
                 <div style={{display: 'block', color: '#fffffff', textAlign: 'left', verticalAlign: 'bottom', width: 200}}>
                     <div>Total Reward Amount</div>
-                    <div style={{fontSize: 18, marginTop: 5}}>{formatElys(trimDec(props.reward,1))}</div>
+                    <div style={{fontSize: 14, marginTop: 5}}>{formatElys(trimDec(props.reward,1))}</div>
                 </div>
                 <div style={{marginTop: 20}}>
-                <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, width: 200}}>Forest Rescue <span style={{position: 'relative', top: -5, left: -5}}>
+                <div style={{color: orange, fontWeight: 'bold', fontSize: 24, marginTop: 20, marginBottom: 10, width: 200}}>Forest Rescue <span style={{position: 'relative', top: -5, left: -5}}>
                     <Info>A percentage of your rewards goes to preventing deforestation.</Info></span>
                 </div>
                 <div style={{

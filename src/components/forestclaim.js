@@ -17,7 +17,7 @@ let trimDec = (n,dec) => {
     return ar.join('.')
 }
 
-let formatElys = (s) => {    
+let formatElys = (s) => {
     let splitDec = s.split('.')
     console.log('left: ' + splitDec[0])
     let ar = []
@@ -31,7 +31,7 @@ let formatElys = (s) => {
     let front = ar.reverse().join(',')
     let back = (splitDec.length>1)?'.' + splitDec[1]:''
     return front + back + ' ELYS'
-    
+
    //return s + ' ELYS'
 }
 
@@ -50,14 +50,14 @@ let Lock = (props) => {
     daysLeft: "7"
     reward: 6.90411
     tokenId: "1"
-    atsrtDate: 
+    atsrtDate:
     */
    let created = new Date(parseInt(props.startDate)*1000)
    let style={
-       display: 'inline-block', 
-       width: 70, 
-       color: '#ffffff', 
-       fontWeight: 'bold', 
+       display: 'inline-block',
+       width: 70,
+       color: '#ffffff',
+       fontWeight: 'bold',
        marginLeft: 20
     }
     let styleAmount = Object.assign({},style)
@@ -133,11 +133,11 @@ let Transfer = (props) => {
     let year = dt.getFullYear().toString()
     let lockedOn = 'Locked on ' + dt.getDate() + ' ' + month + ' ' + year
     let disabled = (!address||transferring)
-    let showErr=(err)?<div style={{color:'#ff0000',fontSize:11, textAlign: 'center'}}>You can't transfer to your own address</div>:null
+    let showErr=(err)?<div style={{color:'#ff0000',fontSize:13, textAlign: 'center'}}>You can't transfer to your own address</div>:null
     return (<div style={{
         display: 'block', width: 250, marginLeft: 'auto', marginRight: 'auto', marginTop: 20
     }}>
-        <div style={{color: orange, fontWeight: 'bold', fontSize: 20, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
+        <div style={{color: orange, fontWeight: 'bold', fontSize: 26, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
             <img src={iboga} alt="" width={40} />
             <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>Transfer</div>
             <img src={iboga} alt="" width={40} />
@@ -210,7 +210,7 @@ class ForestClaim extends React.Component {
         }
     }
     transfer = async (to, tokenId) => {
-        
+
         try{
             await forest.transfer(tokenId,to)
             this.setState({transferring:-1})
@@ -220,17 +220,17 @@ class ForestClaim extends React.Component {
             console.log(e)
             this.setState({transferring:-1})
         }
-        
+
     }
     render = () => {
-        
+
         let arClaims = (this.props.lockTokensInfo)?this.props.lockTokensInfo.map(lock=>(
             <Lock key={lock.tokenId} {...lock} claim={this.claim} transfer={this.transferSelect} claiming={this.state.claiming} transferring={this.state.transferring}/>
         )):[]
-        
+
        let claims = (this.props.loadingLockTokens)?(<div style={{textAlign: 'center', marginTp: 20, marginBottom: 20}}>loading...</div>):(arClaims.length>0)?(
         <div style={{ maxWidth: 500, overflow: 'scroll', marginBottom: 20, marginLeft: (isMobile)?0:20 }}>
-            <div style={{color: orange, fontSize: 16}}>
+            <div style={{color: orange, fontSize: 21}}>
                 <div style={{display: 'inline-block', width: 60, color: orange, fontWeight: 'bold', marginLeft: 20}}>Created</div>
                 <div style={{display: 'inline-block', width: 120, color: orange, fontWeight: 'bold', marginLeft: 33}}>Amount</div>
                 <div style={{display: 'inline-block', width: 95, color: orange, fontWeight: 'bold', marginLeft: 20}}>Claim in</div>
@@ -244,12 +244,12 @@ class ForestClaim extends React.Component {
        ):null
         return (
         <div style={{border: 'solid 2px ' + orange, borderRadius: 20, marginTop: 20,display: 'block', width: '98%', verticalAlign: 'top', position: 'relative'}}>
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 20, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 26, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
                 <img src={iboga} alt="" width={40} />
                 <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>My Staked ELYS</div>
                 <img src={iboga} alt="" width={40} />
             </div>
-            
+
             {claims}
             {transfer}
         </div>)
