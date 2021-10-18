@@ -37,7 +37,7 @@ const Stats = (props) => {
             toClaim: 0,
             locksCreated: 0
     */
-    let locks = (props.stats.totalLocked>1)?props.stats.locksCreated + ' locks created':'1 lock created'
+    let locks = (props.stats.totalLocked>1)?props.stats.locksCreated + ' locks currently active':'1 lock currently active'
     let statStyle={
         color: orange,
         textAlign: 'center',
@@ -54,8 +54,8 @@ const Stats = (props) => {
                 <img src={iboga} alt="" width={40} />
             </div>
             <div style={statStyle}>{locks}</div>
-            <div style={statStyle}>{formatElys(trimDec(props.stats.totalLocked/1e5,1))} locked in the Forest</div>
-            <div style={statStyle}>{formatElys(trimDec(props.stats.totalRewards/1e5,1))} earned as rewards</div>
+            <div style={statStyle}>{formatElys(trimDec(props.stats.totalLocked/1e5,1))} locked</div>
+            <div style={statStyle}>{formatElys(trimDec(props.stats.totalRewards/1e5,1))} rewards pending</div>
             <div style={statStyle}>{formatElys(trimDec(props.stats.toClaim/1e5,1))} available to be earned</div>
             <div style={infoStyle}>If no rewards are available to be earned the forest will still be open for staking</div>
         </div>
