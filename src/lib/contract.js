@@ -3,7 +3,7 @@ import abi from '../crypto/abi';
 
 class Contract {
     _getAcc = async () => {
-        let accs = await this.w3.eth.getAccounts();
+        let accs = await this.w3.eth.getAccounts()
         let acc = accs[0];
         return acc;
     }

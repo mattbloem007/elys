@@ -24,7 +24,7 @@ Creating new locks:
 
 const testAddresses = {
     elys: '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98',
-    forestFactory: '0xb052B700f6FAe29AeafcB893983269830c153c0d'
+    forestFactory: '0x1d59F1358A4582096b58422720cDfe9e2c016Ef9'
 }
 
 const wait = (tm) => new Promise(r=>setTimeout(()=>r(),tm))
@@ -69,7 +69,7 @@ const approve = async (amount) => {
     catch(e){
         return {error: e.message}
     }
-    await wait(20000)
+    await wait(5000)
     return {success: true}
 }
 
@@ -89,18 +89,12 @@ const getElysBalance = async () => {
 }
 
 const getTokenId = async () => {
-    /*
-    let factory = await getFactoryContract()
-    let counter = await factory.tokenIdCounter()
-    return parseInt(counter) + 2
-    */
     return parseInt(Math.random(Date.now())*10000000000)
 }
 
 const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
     donation = donation || 0
-   
     let acc = await getAccount()
     let elys = await getElysContract()
     let spender = getAddress('forestFactory')
@@ -108,8 +102,6 @@ const lockElys = async (amount, lockDays, donation) => {
     if(approved<amount*1e5) return {error: 'insufficient approval'}
     let tokenId = await getTokenId()
     let factory = await getFactoryContract()
-    console.log([amount*1e5, lockDays, donation, tokenId])
-    
     try{
         await factory.lock([amount*1e5, lockDays, donation, tokenId])
     }
@@ -138,12 +130,13 @@ const lockTokenInfo = async (tokenId) => {
     let lock = await getLock()
     let info = await lock.lockInfo([tokenId])
     console.log("ii", info)
-    let amount = info[0]
-    let reward = info[1]
-    let daysLeft = info[2]
+    let amount = parseInt(info[0])
+    let reward = parseInt(info[1])
+    let daysLeft = parseInt(info[2])
+    let startDate = parseInt(info[3])
   //I  let {amount,reward,daysLeft} = await lock.lockInfo([tokenId])
 
-    return {tokenId,amount:amount/1e5,reward:reward/1e5,daysLeft}
+    return {tokenId,amount:amount/1e5,reward:reward/1e5,daysLeft, startDate}
 }
 
 const lockTokensInfo = async () => {
@@ -181,16 +174,47 @@ const emergencyRelease = async (tokenId) => {
 }
 
 const transfer = async (tokenId, to) => {
+    console.log('transferring')
     let acc = await getAccount()
+    console.log('from: ' + acc)
+    console.log('to: ' + to)
+    console.log('tokenId: ' + tokenId)
     let lock = await getLock()
+    console.log('here')
     try{
-        await lock.safeTransferFrom([acc,to,tokenId])
+        await lock.transferFrom([acc,to,parseInt(tokenId)])
+        console.log('done')
     }
     catch(e){
+        console.log(e)
         return {error: e.message}
     }
-    await wait(20000)
+    await wait(10000)
     return {success: true}
+}
+
+const getLeft = async () => {
+    let elys = await getElysContract()
+    let bal = await elys.balanceOf([getAddress('forestFactory')])
+    return bal
+}
+
+const getStats = async () => {
+    let lock = await getLock()
+    let stats = await lock.getStats()
+    let totalLocked = parseInt(stats[0])
+    let totalRewards = parseInt(stats[1])
+    let totalTimeLocked = parseInt(stats[2])
+    let toClaim = await getLeft()
+    let locksCreated = await lock.totalSupply()
+    locksCreated = parseInt(locksCreated)
+    return {
+        totalLocked,
+        totalRewards,
+        avgTimeLocked: totalTimeLocked/locksCreated,
+        toClaim:parseInt(toClaim),
+        locksCreated
+    }
 }
 
 
@@ -227,7 +251,11 @@ let $ = {
     getFactoryContract,
     getElysContract,
     getTokenId,
-    getLeft
+
+    getLeft,
+    getStats,
+    getAccount
+
 };
 
 
