@@ -31,8 +31,8 @@ class Forest extends React.Component {
         duration: '6 months',
         apr: 0,
         reward: 0,
-        donation: '',
-        donationAmount: 0,
+        donation: '1% of rewards',
+        donationAmount: 1,
         approval: 0,
         lockDays: 0,
         lockInfo: {
@@ -55,10 +55,10 @@ class Forest extends React.Component {
         let amountLeft = await forest.getLeft()
         let balance = await forest.getElysBalance()
         let stats = await forest.getStats()
-        this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0, donation: '', donationAmount: 0})
+        this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0})
         let lockTokensInfo = await forest.lockTokensInfo()
         console.log(lockTokensInfo)
-        this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0, donation: '', donationAmount: 0,lockTokensInfo,loadingLockTokens:false})
+        this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0,lockTokensInfo,loadingLockTokens:false})
     }
 
     calculateAPR = async (duration,amount) => {
@@ -155,7 +155,7 @@ class Forest extends React.Component {
                 donationAmount = 5
             break
             default: 
-                donationAmount = 0
+                donationAmount = 1
             break
         }
         if(this.state.approval===0){
