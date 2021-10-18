@@ -90,7 +90,7 @@ let Lock = (props) => {
             height: 25,
             color: '#000000',
             fontWeight: 'bold',
-            fontSize: 12,
+            fontSize: 19,
             marginRight: 20
         }} onClick={()=>props.transfer(props.tokenId)}>{(props.tokenId===props.transferring)?'TRANSFERRING..':'TRANSFER'}</button>
     ):(
@@ -137,7 +137,7 @@ let Transfer = (props) => {
     return (<div style={{
         display: 'block', width: 250, marginLeft: 'auto', marginRight: 'auto', marginTop: 20
     }}>
-        <div style={{color: orange, fontWeight: 'bold', fontSize: 26, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
+        <div style={{color: orange, fontWeight: 'bold', fontSize: 22, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
             <img src={iboga} alt="" width={40} />
             <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>Transfer</div>
             <img src={iboga} alt="" width={40} />
@@ -244,7 +244,7 @@ class ForestClaim extends React.Component {
        ):null
         return (
         <div style={{border: 'solid 2px ' + orange, borderRadius: 20, marginTop: 20,display: 'block', width: '98%', verticalAlign: 'top', position: 'relative'}}>
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 26, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 22, marginTop: 20, marginBottom: 20, textAlign: 'center'}}>
                 <img src={iboga} alt="" width={40} />
                 <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>My Staked ELYS</div>
                 <img src={iboga} alt="" width={40} />
