@@ -35,15 +35,15 @@ const getAddress = (nm) => (getNetwork()==='main')?contractAddress[nm]:(getNetwo
 
 const getElysContract = async () =>  new Contract('elys',getAddress('elys'))
 
-const getFactoryContract = async () => new Contract('forestFactory',getAddress('forestFactory'))
+const getFactoryContract = async (w3) => new Contract('forestFactory',getAddress('forestFactory'),w3)
 
 let _lock = null
 
-const getLock = async () => {
-    if(_lock) return _lock
-    let factory = await getFactoryContract()
+const getLock = async (w3) => {
+    if(_lock && !w3) return _lock
+    let factory = await getFactoryContract(w3)
     let lockAddress = await factory.lockNFT()
-    _lock = new Contract('lockNFT',lockAddress)
+    _lock = new Contract('lockNFT',lockAddress,w3)
     return _lock
 }
 
@@ -195,8 +195,8 @@ const getLeft = async () => {
     return bal
 }
 
-const getStats = async () => {
-    let lock = await getLock()
+const getStats = async (w3) => {
+    let lock = await getLock(w3)
     let stats = await lock.getStats()
     let totalLocked = parseInt(stats[0])
     let totalRewards = parseInt(stats[1])
@@ -249,7 +249,8 @@ let $ = {
     getTokenId,
     getLeft,
     getStats,
-    getAccount
+    getAccount,
+    getNetwork
 };
 
 
