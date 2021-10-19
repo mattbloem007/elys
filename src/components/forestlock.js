@@ -3,7 +3,6 @@ import Info from './info'
 import iboga from '../images/iboga-white-icon.png'
 import {isMobile} from 'react-device-detect';
 import styled from "styled-components"
-import { Container, Section } from "../global"
 
 const orange = '#ec7019'
 const cream = '#facbac'
