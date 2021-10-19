@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Contract from '../lib/contract'
 import contractAddress from '../crypto/contractAddress';
 import TokenInfoBox from './tokeninfobox'
+import forest from '../lib/forest'
 import Web3 from 'web3';
 
 //const orange = '#ec7019'
@@ -67,8 +68,13 @@ class Stats extends Component {
         let foundationLocked = getLocked(10000000,100)  //100 days
 
         let land = (daysPassed<365)?10000000:0 //365 days
+        
+        let provider = new Web3.providers.HttpProvider(rpcEndpoint)
+        let w3 = new Web3(provider)
+        let stats = await forest.getStats(w3)
+        
+        return parseInt(seedLocked + teamLocked + foundationLocked + land) + parseInt(stats.totalLocked/1e5)
 
-        return parseInt(seedLocked + teamLocked + foundationLocked + land)
     }
     componentDidMount = async () => {
         let totalSupply = await this.getTotalElys()

@@ -25,10 +25,10 @@ const Farm = (props) => {
         }}>
             <img src={props.icon} alt='icon' width={30} />
             <div style={{
-                display: 'inline-block', 
-                color: orange, 
-                verticalAlign: 'top', 
-                marginTop: 3, 
+                display: 'inline-block',
+                color: orange,
+                verticalAlign: 'top',
+                marginTop: 3,
                 marginLeft: 20,
                 fontSize: 20,
                 marginBottom: 20
@@ -62,7 +62,7 @@ const FarmPage = (props) => {
     return (<div style={{display: 'block', marginLeft: 'auto', marginRight: 'auto', marginTop: 40, width: isMobile?370:730}}>
         <Farm icon={cannabis} title={'The Grow'} pair={'FTM-ELYS'} pairType={'LP Lock'} lockTime={'3, 6, 12 Months'} return={'4%, 10%, 24%'} apr={'16 - 24%'} paidIn={'ELYS'}/>
         <Farm icon={iboga} title={'The Forest'} pair={'FTM-ELYS'} pairType={'Single token Lock'} lockTime={'12, 24, 36 Months'} return={'12%, 32%, 60%'} apr={'12% - 20%'} paidIn={'ELYS'}/>
-        
+
     </div>)
 }
 

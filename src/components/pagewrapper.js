@@ -15,7 +15,7 @@ class PageWrapper extends Component {
         let provider = await detectEthereumProvider({mustBeMetaMask:true})
         if (provider) {
             window.ethereum = provider
-            return true //window.ethereum.isMetaMask 
+            return true //window.ethereum.isMetaMask
         }
         return false
     }
@@ -50,7 +50,7 @@ class PageWrapper extends Component {
         else{
             this.setState({loading: false})
         }
-        
+
     }
     render = () => {
 
@@ -84,10 +84,10 @@ class PageWrapper extends Component {
                     return (
                         <div style={{display: 'flex', position: 'relative', minHeight: 700, width: '100%', flexDirection: 'column'}}>
                             <div style={{
-                                display: 'block', 
-                                width: '90%', 
-                                marginLeft: 'auto', 
-                                marginRight: 'auto', 
+                                display: 'block',
+                                width: '90%',
+                                marginLeft: 'auto',
+                                marginRight: 'auto',
                                 textAlign: 'center',
                                 marginTop: 150,
                                 fontSize: 18,
@@ -96,14 +96,14 @@ class PageWrapper extends Component {
                                 You need to use the Metamask DAPP browser to interact with elys.money
                             </div>
                             <a href="https://metamask.app.link/dapp/elys.money" style={{
-                                textDecoration: 'none', 
-                                display: 'block', 
-                                padding: 10, 
-                                backgroundColor: '#ffffff', 
-                                textAlign: 'center', 
-                                marginTop: 40, 
-                                width: 300, 
-                                marginLeft: 'auto', 
+                                textDecoration: 'none',
+                                display: 'block',
+                                padding: 10,
+                                backgroundColor: '#ffffff',
+                                textAlign: 'center',
+                                marginTop: 40,
+                                width: 300,
+                                marginLeft: 'auto',
                                 marginRight: 'auto',
                                 borderRadius: 5
                                 }}>
@@ -115,10 +115,10 @@ class PageWrapper extends Component {
                 return (
                     <div style={{display: 'flex', position: 'relative', minHeight: 700, width: '100%', flexDirection: 'column'}}>
                             <div style={{
-                                display: 'block', 
-                                width: '90%', 
-                                marginLeft: 'auto', 
-                                marginRight: 'auto', 
+                                display: 'block',
+                                width: '90%',
+                                marginLeft: 'auto',
+                                marginRight: 'auto',
                                 textAlign: 'center',
                                 marginTop: 150,
                                 fontSize: 18,
@@ -126,14 +126,14 @@ class PageWrapper extends Component {
                             }}>
                                 You will need metamask to interact with elys.money please get it here:
                                 <a href="https://metamask.io/" target="_blank" rel="noreferrer" style={{
-                                    textDecoration: 'none', 
-                                    display: 'block', 
-                                    padding: 10, 
-                                    backgroundColor: '#ffffff', 
-                                    textAlign: 'center', 
-                                    marginTop: 40, 
-                                    width: 300, 
-                                    marginLeft: 'auto', 
+                                    textDecoration: 'none',
+                                    display: 'block',
+                                    padding: 10,
+                                    backgroundColor: '#ffffff',
+                                    textAlign: 'center',
+                                    marginTop: 40,
+                                    width: 300,
+                                    marginLeft: 'auto',
                                     marginRight: 'auto',
                                     borderRadius: 5
                                 }}>
@@ -142,21 +142,21 @@ class PageWrapper extends Component {
                             </div>
                     </div>
                 )
-            } else if (window.ethereum.networkVersion!=='250'){
+            } else if (window.ethereum.networkVersion!=='250' && window.ethereum.networkVersion!=='4002'){
                 return (
                     <div style={{display: 'flex', position: 'relative', minHeight: 700, width: '100%', flexDirection: 'column'}}>
                         <div style={{
-                                display: 'block', 
-                                width: '90%', 
-                                marginLeft: 'auto', 
-                                marginRight: 'auto', 
+                                display: 'block',
+                                width: '90%',
+                                marginLeft: 'auto',
+                                marginRight: 'auto',
                                 textAlign: 'center',
                                 marginTop: 150,
                                 fontSize: 18,
                                 fontWeight: 'bold'
                             }}>Your network needs to be set to Fantom Opera in Metamask.<br /><br />
                             You can find instructions <a href="https://docs.fantom.foundation/tutorials/set-up-metamask" rel="noreferrer" style={{color: '#dddddd'}}>here</a>
-                            
+
                         </div>
 
                     </div>
@@ -170,7 +170,7 @@ class PageWrapper extends Component {
                 )
             }
         }
-        
+
     }
 
 }

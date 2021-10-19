@@ -3,7 +3,7 @@ import abi from '../crypto/abi';
 
 class Contract {
     _getAcc = async () => {
-        let accs = await this.w3.eth.getAccounts();
+        let accs = await this.w3.eth.getAccounts()
         let acc = accs[0];
         return acc;
     }
@@ -19,7 +19,7 @@ class Contract {
         this.address = address;
         this._contract = new this.w3.eth.Contract(this.abi,this.address);
         this.methods = [];
-            
+            console.log("ADDRESS: ", this.address, this._contract)
         this.abi.forEach(async method => {
             if(method.name===undefined) return;
             this[method.name] = async (params,value) => {
@@ -28,7 +28,7 @@ class Contract {
                 if(params===undefined) params=[];
                 if( params.length!==method.inputs.length) throw new Error("Incorrect number of parameters");
                 let func = await this._contract.methods[_method](...params);
-                let gas = 300000;//await func.estimateGas();
+                let gas = 500000;//await func.estimateGas();
                 let gasPrice = await this.w3.eth.getGasPrice();
                 let options = {from:_acc, gas: gas, gasPrice: gasPrice}; //
                 if(method.stateMutability==="payable"){
