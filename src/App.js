@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import Main from './pages/main'
 
+window.v='0.1'
+
 class App extends Component {
   render = () => {
     return (
