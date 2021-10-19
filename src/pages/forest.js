@@ -50,7 +50,7 @@ class Forest extends React.Component {
         },
         loadingLockTokens: true
     }
-   
+
     getInfo = async () => {
         let amountLeft = await forest.getLeft()
         let balance = await forest.getElysBalance()
@@ -132,13 +132,13 @@ class Forest extends React.Component {
                 return this.setState({lockAmount: val})
             }
             this.calculateAPR(this.state.duration,parseFloat(val))
-        } 
+        }
     }
 
     durationChanged = (duration) => {
         if(this.state.approval===0){
             this.calculateAPR(duration)
-        } 
+        }
     }
 
     donationChange = (donation) => {
@@ -154,7 +154,7 @@ class Forest extends React.Component {
             case '5% of rewards':
                 donationAmount = 5
             break
-            default: 
+            default:
                 donationAmount = 1
             break
         }
@@ -164,7 +164,7 @@ class Forest extends React.Component {
     }
 
     approve = async () => {
-        
+
         let lock = {
             amount: this.state.lockAmount,
             lockDays: this.state.lockDays,
@@ -181,7 +181,7 @@ class Forest extends React.Component {
         catch(e){
             this.setState({approval: 0})
         }
-        
+
     }
 
     lock = async () => {
@@ -207,16 +207,16 @@ class Forest extends React.Component {
         let stats = await forest.getStats()
         this.setState({stats,amountLeft,balance})
     }
-    
+
     render = () => {
         //<Locked amountLeft={this.state.amountLeft}/>
         return (
             <div style={{display: 'block', width: (isMobile)?350:550, borderRadius: 20, marginLeft: 'auto', marginRight: 'auto', marginTop: 40, marginBottom: 20}}>
                 <ForestStats stats={this.state.stats} />
-                <ForestLock  
-                balance={this.state.balance} 
-                lockAmountChange={this.lockAmountChanged} 
-                lockAmount={this.state.lockAmount} 
+                <ForestLock
+                balance={this.state.balance}
+                lockAmountChange={this.lockAmountChanged}
+                lockAmount={this.state.lockAmount}
                 current={this.state.duration}
                 selectDuration={this.durationChanged}
                 duration={this.state.duration}
