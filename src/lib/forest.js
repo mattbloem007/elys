@@ -33,7 +33,7 @@ const getNetwork = () => (window.ethereum.networkVersion === '250')?'main':(wind
 
 const getAddress = (nm) => (getNetwork()==='main')?contractAddress[nm]:(getNetwork()==='test')?testAddresses[nm]:null
 
-const getElysContract = async () =>  new Contract('elys',getAddress('elys'))
+const getElysContract = async (w3) =>  new Contract('elys',getAddress('elys'),w3)
 
 const getFactoryContract = async (w3) => new Contract('forestFactory',getAddress('forestFactory'),w3)
 
