@@ -136,7 +136,7 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'home'}>Home</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Unlock Tokens</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap ELYS</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Plugin & Tools</Link>
+                
                 <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>The Forest</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
 
