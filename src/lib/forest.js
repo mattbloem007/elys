@@ -189,8 +189,8 @@ const transfer = async (tokenId, to) => {
     return {success: true}
 }
 
-const getLeft = async () => {
-    let elys = await getElysContract()
+const getLeft = async (w3) => {
+    let elys = await getElysContract(w3)
     let bal = await elys.balanceOf([getAddress('forestFactory')])
     return bal
 }
@@ -201,7 +201,7 @@ const getStats = async (w3) => {
     let totalLocked = parseInt(stats[0])
     let totalRewards = parseInt(stats[1])
     let totalTimeLocked = parseInt(stats[2])
-    let toClaim = await getLeft()
+    let toClaim = await getLeft(w3)
     let locksCreated = await lock.totalSupply()
     locksCreated = parseInt(locksCreated)
     return {
