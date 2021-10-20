@@ -4,8 +4,8 @@ import Intro from './intro'
 import UnlockPage from './unlock'
 import FarmPage from './farm'
 import SwapPage from './swap'
+import PluginPage from './plugin'
 import Forest from './forest'
-
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
@@ -34,7 +34,7 @@ class Main extends Component {
         let provider = await detectEthereumProvider()
         if (provider) {
             window.ethereum = provider
-            return true //window.ethereum.isMetaMask 
+            return true //window.ethereum.isMetaMask
         }
         return false
     }
@@ -57,9 +57,9 @@ class Main extends Component {
         return price
     }
     connected = async () => {
-        
+
         this.setState({connected:true})
-        
+
     }
     gotoPage = (page) => {
         this.hideSideBar()
@@ -73,7 +73,7 @@ class Main extends Component {
     hamburgerClick = () => {
         if(!isMobile) return
         this.setState({sideMenuHidden:!this.state.sideMenuHidden})
-    } 
+    }
     hideSideBar = () => {
         if(!isMobile) return
         this.setState({sideMenuHidden:true})
@@ -108,6 +108,13 @@ class Main extends Component {
                     </div>
                 )
                 break
+              case 'plugins':
+                  body = (
+                      <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                          <PluginPage />
+                      </div>
+                  )
+                  break
 
               case 'forest':
                   body = (
@@ -116,7 +123,6 @@ class Main extends Component {
                       </PageWrapper>
                   )
                   break
-
 
         }
 
