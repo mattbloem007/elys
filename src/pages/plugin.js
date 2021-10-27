@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react"
 import { Formik, Field, Form, ErrorMessage } from "formik"
 import styled from "styled-components"
@@ -13,9 +12,9 @@ const encode = data => {
     .join("&")
 }
 
-const generateButton = (data, setField) => {
+const generateButton = (data, setField, currency) => {
   console.log(data)
-  let code = '<div class="elysPaymentGateway" data-price="' + data.price + '" product-title="' + data.product_name + '" merchant-wallet="' + data.walletAddress + '" button-color="' + data.elysButton +  '" ></div>\n<link href="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/pay/index.css" rel="stylesheet" />\n<script src="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/pay/index.js"></script>'
+  let code = '<div class="elysPaymentGateway" currency="' + currency + '" data-price="' + data.price + '" product-title="' + data.product_name + '" merchant-wallet="' + data.walletAddress + '" button-color="' + data.elysButton +  '"instructions="' + data.instructions +  '" ></div>\n<link href="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/elysButton/index.css" rel="stylesheet" />\n<script src="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/elysButton/index.js"></script>'
   console.log(code)
   localStorage.setItem("ButtonCode", code)
   setField("code", code)
@@ -33,6 +32,8 @@ const copyToClipboard = () => {
 
 function PluginPage() {
   const [token, setToken] = useState(null)
+  const [currency, setCurrency] = useState(null)
+
   return (
     <Section id="features">
       <StyledSection>
@@ -45,7 +46,7 @@ function PluginPage() {
             <Formik
               initialValues={{ instructions: "", price: "", product_id: "", product_name: "", walletAddress: "" }}
               onSubmit={(data, {resetForm, setFieldValue}) => {
-                generateButton(data, setFieldValue)
+                generateButton(data, setFieldValue, currency)
                   fetch("/", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -115,9 +116,20 @@ function PluginPage() {
                 <br />
                 <Flex style={{marginBottom: "50px"}}>
                   <FeaturesGrid>
+                  <Label>Choose currency</Label>
+                  <FeatureRadio>
+                  <StyledRadioLabel>
+              			<Input type="radio" name="currency" value="USD" onClick={() => setCurrency("USD")} />
+              			<Span>USD</Span>
+              		</StyledRadioLabel>
+                  <StyledRadioLabel>
+              			<Input type="radio" name="currency" value="ELYS" onClick={() => setCurrency("ELYS")} />
+              			<Span>ELYS</Span>
+              		</StyledRadioLabel>
+                  </FeatureRadio>
                   <FeatureItem>
-                    <Label htmlFor="price">Price in ELYS</Label>
-                    <Field name="price" placeholder="Cost of product in ELYS" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                    <Label htmlFor="price">Price in {currency}</Label>
+                    <Field name="price" placeholder="Cost of product" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                     <ErrorMessage name="telegram" />
                   </FeatureItem>
                   </FeaturesGrid>
@@ -375,6 +387,13 @@ const FeatureItem = styled.div`
   flex-direction: column;
 `
 
+const FeatureRadio = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: row;
+`
+
 const ButtonContainer = styled.div`
   display: flex;
   align-items: flex-end;
@@ -400,4 +419,51 @@ const SacramentSymbol = styled.img`
   @media (max-width: 570px) {
     padding-right: 5px;
   }
+`
+
+const StyledRadioLabel = styled.label`
+  display: flex;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 0.375em;
+`
+
+const Input = styled.input`
+position: absolute;
+		left: -9999px;
+		&:checked + span {
+			background-color: #facbac;
+      opacity: 0.9;
+			&:before {
+				box-shadow: inset 0 0 0 0.4375em #ec7019;
+			}
+		}
+`
+
+const Span = styled.span`
+display: flex;
+		align-items: center;
+		padding: 0.375em 0.75em 0.375em 0.375em;
+		border-radius: 99em;
+		transition: 0.25s ease;
+    font-weight: bold;
+    font-size: 20px;
+		&:hover {
+			background-color: #facbac;
+      opacity: 0.9;
+		}
+		&:before {
+			display: flex;
+			flex-shrink: 0;
+			content: "";
+			background-color: #251D14;
+			width: 1.5em;
+			height: 1.5em;
+			border-radius: 50%;
+			margin-right: 0.375em;
+			transition: 0.25s ease;
+			box-shadow: inset 0 0 0 0.125em #ec7019;
+		}
 `
