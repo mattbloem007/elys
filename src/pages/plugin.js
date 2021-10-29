@@ -374,11 +374,11 @@ const GetStartedContainer = styled(Container)`
 `
 
 const Submit = styled.button`
-width: 167px;
-height: 32px;
-float: right;
-background: #ED6F1B 0% 0% no-repeat padding-box;
-border-radius: 45px;
+  width: 167px;
+  height: 32px;
+  float: right;
+  background: #ED6F1B 0% 0% no-repeat padding-box;
+  border-radius: 45px;
 `
 const FeatureItem = styled.div`
   display: flex;
