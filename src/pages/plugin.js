@@ -14,7 +14,7 @@ const encode = data => {
 
 const generateButton = (data, setField, currency) => {
   console.log(data)
-  let code = '<div class="elysPaymentGateway" currency="' + currency + '" data-price="' + data.price + '" product-title="' + data.product_name + '" merchant-wallet="' + data.walletAddress + '" button-color="' + data.elysButton +  '"instructions="' + data.instructions +  '" ></div>\n<link href="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/buttonElys/index.css" rel="stylesheet" />\n<script src="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/buttonElys/index.js"></script>'
+  let code = '<div class="elysPaymentGateway" currency="' + currency + '" data-price="' + data.price + '" product-title="' + data.product_name + '" merchant-wallet="' + data.walletAddress + '" button-color="' + data.elysButton +  '"instructions="' + data.instructions +  '" ></div>\n<link href="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/ElysPay/index.css" rel="stylesheet" />\n<script src="https://cdn.jsdelivr.net/gh/mattbloem007/elys-payment-widget@main/ElysPay/index.js"></script>'
   console.log(code)
   localStorage.setItem("ButtonCode", code)
   setField("code", code)
