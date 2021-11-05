@@ -61,6 +61,16 @@ const approve = async (amount) => {
         await elys.approve([getAddress('forestFactory'),amount*1e5])
     }
     catch(e){
+        await wait(5000)
+        try{
+            let spender = getAddress('forestFactory')
+            let acc = await getAccount()
+            let approved = await elys.allowance([acc,spender])
+            if(approved>=amount*1e5) return {success: true}
+        }
+        catch(e){
+            return {error: e.message}
+        }
         return {error: e.message}
     }
     await wait(5000)
@@ -148,6 +158,7 @@ const lockTokensInfo = async () => {
 const release = async (tokenId) => {
     let lock = await getLock()
     try{
+        //console.log('here')
         await lock.release([tokenId])
     }
     catch(e){
@@ -216,7 +227,7 @@ const getStats = async (w3) => {
 
 //This function increases the number of days so you can test the lock release. For testnet only
 const _inc = async (days) => {
-    if(getNetwork()!=test){
+    if(getNetwork()!=='test'){
         alert("This function is for testnet only")
         return
     }
