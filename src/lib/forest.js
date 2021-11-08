@@ -1,5 +1,6 @@
 import Contract from './contract'
 import contractAddress from '../crypto/contractAddress'
+import Web3 from 'web3';
 
 /*
 Some notes:
@@ -40,6 +41,9 @@ const getFactoryContract = async (w3) => new Contract('forestFactory',getAddress
 let _lock = null
 
 const getLock = async (w3) => {
+    if(getNetwork()==='main'){
+        return new Contract('lockNFT','0x90AA737cfb8D8fb0b610C500BD494178654Ffc8E',w3)
+    }
     if(_lock && !w3) return _lock
     let factory = await getFactoryContract(w3)
     let lockAddress = await factory.lockNFT()
@@ -52,29 +56,39 @@ const getReward = async (lockDays, amount) => {
     return await factory.getReward([lockDays,amount * 1e5])
 }
 
+const getApproved = async(amount) => {
+    let elys = await getElysContract()
+    let spender = getAddress('forestFactory')
+    let acc = await getAccount()
+    let approved = await elys.allowance([acc,spender])
+    return (approved>=amount*1e5)
+}
+
 const approve = async (amount) => {
+    let approved = await getApproved(amount)
+    if(approved) return {success: true}
     let bal = await getElysBalance()
     bal = bal/1e5
     if(bal<amount) return {error: 'insufficient ELYS'}
     let elys = await getElysContract()
     try{
-        await elys.approve([getAddress('forestFactory'),amount*1e5])
+        elys.approve([getAddress('forestFactory'),amount*1e5]).then(console.log)
+        let cnt = 0
+        while(!approved && cnt<50){
+            await wait(5000)
+            approved = await getApproved(amount)
+            cnt++
+        }
+        if(approved) return  {success: true}
+        return {error: new Error('approval failed')}
     }
     catch(e){
+        console.log(e)
         await wait(5000)
-        try{
-            let spender = getAddress('forestFactory')
-            let acc = await getAccount()
-            let approved = await elys.allowance([acc,spender])
-            if(approved>=amount*1e5) return {success: true}
-        }
-        catch(e){
-            return {error: e.message}
-        }
-        return {error: e.message}
+        approved = await getApproved(amount)
+        if(approved) return  {success: true}
+        return {error: e}
     }
-    await wait(5000)
-    return {success: true}
 }
 
 const getAccount = async () => {
@@ -107,16 +121,24 @@ const lockElys = async (amount, lockDays, donation) => {
     if(approved<amount*1e5) return {error: 'insufficient approval'}
     let tokenId = await getTokenId()
     let factory = await getFactoryContract()
-    console.log('params:')
-    console.log([amount*1e5, lockDays, donation, tokenId])
+    
     try{
-        await factory.lock([amount*1e5, lockDays, donation, tokenId])
+        factory.lock([amount*1e5, lockDays, donation, tokenId]).then(console.log)
+        let locked = false
+        let cnt = 0
+        while(!locked && cnt<50){
+            await wait(5000)
+            let info = await lockTokenInfo(tokenId)
+            console.log(info)
+            locked = (info.amount>0)
+            cnt++
+        }
+        if(locked) return {success: true}
+        return {error: new Error('lock unsuccesful')}
     }
     catch(e){
         return {error: e.message}
     }
-    await wait(20000)
-    return {success: true}
 }
 
 const lockTokenIDs = async () => {
@@ -158,14 +180,23 @@ const lockTokensInfo = async () => {
 const release = async (tokenId) => {
     let lock = await getLock()
     try{
-        //console.log('here')
-        await lock.release([tokenId])
+        console.log('tokenID:' + tokenId)
+        lock.release([tokenId]).then(console.log)
+        let released = false
+        let cnt = 0
+        while(!released && cnt<50){
+            await wait(5000)
+            let info = await lockTokenInfo(tokenId)
+            console.log(info)
+            released = (info.amount===0)
+            cnt++
+        }
+        if(released) return {success: true}
+        return {error: new Error('release unsuccesful')}
     }
     catch(e){
         return {error: e.message}
     }
-    await wait(20000)
-    return {success: true}
 }
 
 const emergencyRelease = async (tokenId) => {
@@ -180,24 +211,36 @@ const emergencyRelease = async (tokenId) => {
     return {success: true}
 }
 
-const transfer = async (tokenId, to) => {
-    console.log('transferring')
-    let acc = await getAccount()
-    console.log('from: ' + acc)
-    console.log('to: ' + to)
-    console.log('tokenId: ' + tokenId)
-    let lock = await getLock()
-    console.log('here')
+const transfer = async (tokenId, to, cnt) => {
+    //if(cnt && cnt>10)return {error: new Error('transfer unsuccesful')}
+    //await wait(500)
+    
     try{
-        await lock.transferFrom([acc,to,parseInt(tokenId)])
-        console.log('done')
+        
+        let acc = await getAccount()
+       
+        let lock = await getLock()
+        
+        lock.transferFrom([acc,to,parseInt(tokenId)])
+        let transferred = false
+        let cnt = 0
+        while(!transferred&&cnt<50){
+            await wait(5000)
+            let owner = await lock.ownerOf([tokenId])
+            transferred = (owner===to)
+            cnt++
+        }
+        if(transferred) return {success: true}
+        return {error: new Error('transfer unsuccesful')}
     }
     catch(e){
         console.log(e)
-        return {error: e.message}
+        console.log('trying again')
+        cnt = cnt || 0
+        cnt++
+        return await transfer(tokenId, to, cnt)
     }
-    await wait(10000)
-    return {success: true}
+    
 }
 
 const getLeft = async (w3) => {
@@ -261,7 +304,8 @@ let $ = {
     getLeft,
     getStats,
     getAccount,
-    getNetwork
+    getNetwork,
+    _lock
 };
 
 
