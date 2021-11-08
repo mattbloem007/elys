@@ -90,7 +90,7 @@ let Lock = (props) => {
             height: 25,
             color: '#000000',
             fontWeight: 'bold',
-            fontSize: 19,
+            fontSize: 12,
             marginRight: 20
         }} onClick={()=>props.transfer(props.tokenId)}>{(props.tokenId===props.transferring)?'TRANSFERRING..':'TRANSFER'}</button>
     ):(
@@ -180,9 +180,14 @@ let Transfer = (props) => {
             opacity: disabled?0.5:1,
             marginTop: 10,
             marginBottom: 30
-        }} onClick={()=>{
-            setTransferring(true)
-            props.transfer(address,props.tokenId)
+        }} onClick={(e)=>{
+            e.stopPropagation()
+            console.log('here')
+            setTimeout(()=>{
+               setTransferring(true)
+               props.transfer(address,props.tokenId)
+            },100)
+            
         }}>{transferring?'TRANSFERRING..':'TRANSFER'}</button></div>
     </div>)
 }
@@ -210,13 +215,14 @@ class ForestClaim extends React.Component {
         }
     }
     transfer = async (to, tokenId) => {
-
+        
         try{
             await forest.transfer(tokenId,to)
             this.setState({transferring:-1})
             await this.props.claimUpdate()
         }
         catch(e){
+            console.log('error transferring')
             console.log(e)
             this.setState({transferring:-1})
         }
