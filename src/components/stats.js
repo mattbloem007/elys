@@ -35,7 +35,7 @@ let addCommas = (amnt) => {
 
 class Stats extends Component {
     state = {
-        totalSupply: 0
+        totalSupply: 0,
     }
     loading = () => this.state.totalSupply===0 || this.props.price.loading
     wait = (tm) => {
@@ -69,11 +69,13 @@ class Stats extends Component {
 
         let land = (daysPassed<365)?10000000:0 //365 days
         
+        /*
         let provider = new Web3.providers.HttpProvider(rpcEndpoint)
         let w3 = new Web3(provider)
         let stats = await forest.getStats(w3)
+        */
         
-        return parseInt(seedLocked + teamLocked + foundationLocked + land) + parseInt(stats.totalLocked/1e5)
+        return parseInt(seedLocked + teamLocked + foundationLocked + land)// + parseInt(stats.totalLocked/1e5)
 
     }
     componentDidMount = async () => {
