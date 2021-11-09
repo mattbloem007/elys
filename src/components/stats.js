@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Contract from '../lib/contract'
 import contractAddress from '../crypto/contractAddress';
 import TokenInfoBox from './tokeninfobox'
-import forest from '../lib/forest'
+//import forest from '../lib/forest'
 import Web3 from 'web3';
 
 //const orange = '#ec7019'
