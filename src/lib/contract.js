@@ -1,11 +1,13 @@
 
 import abi from '../crypto/abi';
 
+const wait = (tm) => new Promise(r=>setTimeout(()=>r(),tm))
+
 class Contract {
     _getAcc = async () => {
-        //let accs = await this.w3.eth.getAccounts()
-        await window.ethereum.enable()
-        const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        let accs = await this.w3.eth.getAccounts()
+        //await window.ethereum.enable()
+        //const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
         let acc = accs[0];
         return acc;
     }
@@ -21,7 +23,6 @@ class Contract {
         this.address = address;
         this._contract = new this.w3.eth.Contract(this.abi,this.address);
         this.methods = [];
-            console.log("ADDRESS: ", this.address, this._contract)
         this.abi.forEach(async method => {
             if(method.name===undefined) return;
             this[method.name] = async (params,value) => {
@@ -40,7 +41,9 @@ class Contract {
                     return res;
                 } else {
                     options.gasPrice = await this.w3.eth.getGasPrice();
+                    
                     let gasEstOptions = {from: options.from, gasPrice: options.gasPrice}
+                    
                     if(value>0) gasEstOptions.value = value
                     try{
                         options.gas =  await func.estimateGas(gasEstOptions)
@@ -49,9 +52,36 @@ class Contract {
                         console.log(e)
                         options.gas = 2000000
                     }
-                    console.log(options)
-                    let res = await func.send(options);
-                    return res;
+                    try{
+                        
+                        let res = await func.send(options);
+                        return res;
+                    }
+                    catch(e){
+                        if(e.message!=='Returned error: unknown account') {
+                            console.log(e)
+                            throw(e)
+                        }
+                        let cnt = 0
+                        let er
+                        let res = null
+
+                        while(cnt<10){
+                            await wait(500)
+                            await window.ethereum.request({ method: 'eth_requestAccounts' })
+                            try{
+                                res = await func.send(options);
+                                break
+                            }
+                            catch(e){
+                                er = e
+                                cnt++
+                            }
+                        }
+                        if(res) return res
+                        throw(er)
+                    }
+                    
                 }
             }
         });
