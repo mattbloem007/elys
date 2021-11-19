@@ -6,6 +6,8 @@ import FarmPage from './farm'
 import SwapPage from './swap'
 import PluginPage from './plugin'
 import Forest from './forest'
+import ToolShed from './toolshed'
+import Rebates from './rebates'
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
@@ -111,10 +113,18 @@ class Main extends Component {
               case 'plugins':
                   body = (
                       <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
-                          <PluginPage />
+                          <ToolShed />
                       </div>
                   )
                   break
+
+                  case 'pay':
+                      body = (
+                          <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                              <PluginPage />
+                          </div>
+                      )
+                      break
 
               case 'forest':
                   body = (
