@@ -3,7 +3,6 @@ import Info from './info'
 import iboga from '../images/iboga-white-icon.png'
 import {isMobile} from 'react-device-detect';
 import styled from "styled-components"
-import { Container, Section } from "../global"
 
 const orange = '#ec7019'
 const cream = '#facbac'
@@ -39,10 +38,6 @@ let Radio = (props) => (
 			<Input type="radio" value={props.value} name={props.name} checked={(props.value===props.selected)} onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}}/>
 			<Span>{props.value}</Span>
 		</Label>
-    // <div style={{position: 'relative', left: -20, display: 'block', textAlign: 'left', cursor: 'pointer', marginTop: 10, marginLeft: 20}}  onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}}>
-    //     <input type="radio" value={props.value} name={props.name} checked={(props.value===props.selected)} onClick={(e)=>{e.stopPropagation();props.onChange(props.value)}} style={{cursor: 'pointer'}}/>
-    //     <div style={{color: '#ffffff', display: 'inline-block', marginLeft: 10}}>{props.value}</div>
-    // </div>
 )
 
 let ForestLock = (props) => {
@@ -71,35 +66,35 @@ let ForestLock = (props) => {
 
     return (
     <div style={{border: 'solid 2px ' + orange, display: 'block', paddingTop: 20, borderRadius: 20, width: '98%', position: 'relative'}}>
-        <div style={{color: orange, fontWeight: 'bold', fontSize: 20, textAlign: 'center', marginLeft: 20}}>
+        <div style={{color: orange, fontWeight: 'bold', fontSize: 22, textAlign: 'center', marginLeft: 20}}>
             <img src={iboga} alt="" width={40} />
             <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>Lock in Forest</div>
             <img src={iboga} alt="" width={40} />
         </div>
         <div style={{display: 'inline-block', marginLeft: (isMobile)?20:30}}>
 
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Lock Amount</div>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 19, marginTop: 20}}>Lock Amount</div>
             <div style={{marginTop: 5}}>
                 <input onChange={props.lockAmountChange} value={props.lockAmount} defaultValue={0.0} type={'text'}
                     style={{
                         border: 'solid 1px ' + orange,
                         backgroundColor: cream,
                         borderRadius: 10,
-                        height: 20,
+                        height: 26,
                         padding: 3,
-                        width: 150,
+                        width: 195,
                         paddingLeft: 10,
                         outline: 'transparent'
                     }}
                 />
             </div>
-            <div style={{color: '#ffffff', fontSize: 12, marginTop: 10, width: (isMobile)?180:250}}>
-                You have {(props.balance===-1)?'loading..':formatElys(trimDec(props.balance/1e5,1))} available
+            <div style={{color: '#ffffff', fontSize: 19, marginTop: 10, width: (isMobile)?180:250}}>
+                You have {(props.balance===-1)?'loading..':formatElys(trimDec(props.balance/1e5,1))}
             </div>
 
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20}}>Deposit Duration</div>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 24, marginTop: 20}}>Deposit Duration</div>
             <div style={{
-                width: 150,
+                width: 195,
                 display: 'block',
                 paddingBottom: 10,
                 borderBottom: 'solid 2px ' + orange
@@ -109,18 +104,20 @@ let ForestLock = (props) => {
                 <Radio onChange={props.selectDuration} value={'28 days'} selected={props.duration} />
             </div>
             <div style={{
-                width: 150,
+                width: 195,
                 display: 'block',
                 borderBottom: 'solid 2px ' + orange,
-                paddingBottom: 10
+                paddingBottom: 10,
+                paddingTop: 10
             }}>
                 <Radio onChange={props.selectDuration} value={'3 months'} selected={props.duration} />
                 <Radio onChange={props.selectDuration} value={'6 months'} selected={props.duration} />
                 <Radio onChange={props.selectDuration} value={'9 months'} selected={props.duration} />
             </div>
             <div style={{
-                width: 150,
-                display: 'block'
+                width: 195,
+                display: 'block',
+                paddingTop: 10
             }}>
                 <Radio onChange={props.selectDuration} value={'1 year'} selected={props.duration} />
                 <Radio onChange={props.selectDuration} value={'2 years'} selected={props.duration} />
@@ -128,17 +125,17 @@ let ForestLock = (props) => {
             </div>
         </div>
         <div style={{display: 'inline-block', verticalAlign: 'top', paddingTop: 2, marginLeft: 20}}>
-            <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, marginBottom: 10, width: 200}}>Reward Calculation</div>
+            <div style={{color: orange, fontWeight: 'bold', fontSize: 19, marginTop: 20, marginBottom: 10, width: 230}}>Reward Calculation</div>
                 <div style={{position: 'relative', top: -22, fontColor: '#ffffff', marginTop: 30, display: 'block', width: 200}}>
                     {props.apr}% APR <span style={{position: 'relative', top: -5, left: -5}}>
                     <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span>
                 </div>
-                <div style={{display: 'block', color: '#fffffff', textAlign: 'left', verticalAlign: 'bottom', width: 200}}>
+                <div style={{fontSize: 19, display: 'block', color: '#fffffff', textAlign: 'left', verticalAlign: 'bottom', width: 200}}>
                     <div>Total Reward Amount</div>
-                    <div style={{fontSize: 18, marginTop: 5}}>{formatElys(trimDec(props.reward,1))}</div>
+                    <div style={{fontSize: 19, marginTop: 5}}>{formatElys(trimDec(props.reward,1))}</div>
                 </div>
                 <div style={{marginTop: 20}}>
-                <div style={{color: orange, fontWeight: 'bold', fontSize: 18, marginTop: 20, width: 200}}>Forest Rescue <span style={{position: 'relative', top: -5, left: -5}}>
+                <div style={{color: orange, fontWeight: 'bold', fontSize: 19, marginTop: 20, marginBottom: 10, width: 200}}>Forest Rescue <span style={{position: 'relative', top: -5, left: -5}}>
                     <Info>A percentage of your rewards goes to preventing deforestation.</Info></span>
                 </div>
                 <div style={{
@@ -188,7 +185,7 @@ display: flex;
 		border-radius: 99em;
 		transition: 0.25s ease;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 19px;
 		&:hover {
 			background-color: #facbac;
       opacity: 0.9;

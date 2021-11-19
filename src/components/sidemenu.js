@@ -158,6 +158,7 @@ const Menu = (props) => {
             }}>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'home'}>Home</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Unlock Tokens</Link>
+
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap ELYS</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>The Forest</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Toolshed</Link>
@@ -179,7 +180,7 @@ const Menu = (props) => {
                 <Icon src={github} alt="github" href="https://github.com/elyseos/contracts"/>
                 <Icon src={medium} alt="medium" href="https://medium.com/@Elyseos"/>
                 <Icon src={email} alt="email" href="https://www.elyseos.com/email-signup"/>
-                <Icon src={discord} alt="discord" href="https://discord.gg/YKJsDyHDkc"/>
+                <Icon src={discord} alt="discord" href="https://discord.gg/gY2WMAnBem"/>
             </div>
         </div>
     )

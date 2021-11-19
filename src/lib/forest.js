@@ -33,17 +33,17 @@ const getNetwork = () => (window.ethereum.networkVersion === '250')?'main':(wind
 
 const getAddress = (nm) => (getNetwork()==='main')?contractAddress[nm]:(getNetwork()==='test')?testAddresses[nm]:null
 
-const getElysContract = async () =>  new Contract('elys',getAddress('elys'))
+const getElysContract = async (w3) =>  new Contract('elys',getAddress('elys'),w3)
 
-const getFactoryContract = async () => new Contract('forestFactory',getAddress('forestFactory'))
+const getFactoryContract = async (w3) => new Contract('forestFactory',getAddress('forestFactory'),w3)
 
 let _lock = null
 
-const getLock = async () => {
-    if(_lock) return _lock
-    let factory = await getFactoryContract()
+const getLock = async (w3) => {
+    if(_lock && !w3) return _lock
+    let factory = await getFactoryContract(w3)
     let lockAddress = await factory.lockNFT()
-    _lock = new Contract('lockNFT',lockAddress)
+    _lock = new Contract('lockNFT',lockAddress,w3)
     return _lock
 }
 
@@ -189,19 +189,19 @@ const transfer = async (tokenId, to) => {
     return {success: true}
 }
 
-const getLeft = async () => {
-    let elys = await getElysContract()
+const getLeft = async (w3) => {
+    let elys = await getElysContract(w3)
     let bal = await elys.balanceOf([getAddress('forestFactory')])
     return bal
 }
 
-const getStats = async () => {
-    let lock = await getLock()
+const getStats = async (w3) => {
+    let lock = await getLock(w3)
     let stats = await lock.getStats()
     let totalLocked = parseInt(stats[0])
     let totalRewards = parseInt(stats[1])
     let totalTimeLocked = parseInt(stats[2])
-    let toClaim = await getLeft()
+    let toClaim = await getLeft(w3)
     let locksCreated = await lock.totalSupply()
     locksCreated = parseInt(locksCreated)
     return {
@@ -249,7 +249,8 @@ let $ = {
     getTokenId,
     getLeft,
     getStats,
-    getAccount
+    getAccount,
+    getNetwork
 };
 
 
