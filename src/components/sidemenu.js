@@ -50,6 +50,24 @@ const Link = (props) => {
     )
 }
 
+const SubLink = (props) => {
+    let style = {
+        border: 'none',
+        color: 'white',
+        fontSize: 14,
+        marginLeft: 10,
+        backgroundColor: 'transparent',
+        display: 'block',
+        marginTop: 10
+    }
+    if(props.page===props.current){
+        style.fontWeight = 'bold'
+    }
+    return (
+        <button style={style} onClick={()=>props.gotoPage(props.page)}>{props.children}</button>
+    )
+}
+
 const Logo = (props) => {
     return (
         <a style={{padding: 20, width: 210, marginLeft: 'auto', marginRight: 'auto',
@@ -122,6 +140,11 @@ const Menu = (props) => {
     <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Plugins & Tools</Link>
     <Link current={props.page} gotoPage={props.gotoPage} page={'farm'}>Permaculture Farm</Link>
     */
+    let sub = null;
+    if (props.page == 'plugins' || props.page == 'pay'){
+      sub = (<SubLink current={props.page} gotoPage={props.gotoPage} page={'pay'}>ELYS Pay Button</SubLink>)
+
+    }
     return (
         <div style={style} onClick={props.click}>
             <Logo />
@@ -136,8 +159,9 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'home'}>Home</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Unlock Tokens</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap ELYS</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Plugin & Tools</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>The Forest</Link>
+                <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Toolshed</Link>
+                {sub}
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
 
             </div>

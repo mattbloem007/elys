@@ -113,10 +113,18 @@ class Main extends Component {
               case 'plugins':
                   body = (
                       <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
-                          <Rebates />
+                          <Woo />
                       </div>
                   )
                   break
+
+                  case 'pay':
+                      body = (
+                          <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                              <PluginPage />
+                          </div>
+                      )
+                      break
 
               case 'forest':
                   body = (
