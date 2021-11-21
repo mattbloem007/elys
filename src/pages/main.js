@@ -7,6 +7,7 @@ import SwapPage from './swap'
 import PluginPage from './plugin'
 import Forest from './forest'
 import ToolShed from './toolshed'
+import Rebates from './rebates'
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
@@ -112,7 +113,11 @@ class Main extends Component {
               case 'plugins':
                   body = (
                       <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+<<<<<<< HEAD
                           <ToolShed />
+=======
+                          <Woo />
+>>>>>>> matt-dev
                       </div>
                   )
                   break
