@@ -7,6 +7,10 @@ import woo from "../images/woo.png"
 
 class ToolShed extends React.Component {
 
+    constructor(props){
+      super(props);
+    }
+
     render = () => {
         return (
             <div style={{display: 'block', width: (isMobile)?350:550, borderRadius: 20, marginLeft: 'auto', marginRight: 'auto', marginTop: 40, marginBottom: 20}}>
@@ -31,7 +35,7 @@ class ToolShed extends React.Component {
                 <br/>
                 <br/>
                 <TextContainer>
-                  <Title>"Pay With ELYS” Website Button</Title>
+                  <Title onClick={()=>this.props.gotoPage("pay")} style={{cursor: "pointer"}}>"Pay With ELYS” Website Button</Title>
                   This tool produces code that you can paste in to a website, it creates a button that enables:
                   <br/>
                   <br/>
@@ -51,7 +55,11 @@ class ToolShed extends React.Component {
                     - If you wish to place more than one button on the same webpage the code needs a
                       slight tweak. Please contact us in our Discord at #tech-discussion and we will help
                       you out.
+                    <br/>
+                    <br/>
+                  <ActionButton style={{cursor: "pointer"}} onClick={()=>this.props.gotoPage("pay")}>Build Button</ActionButton>
                 </TextContainer>
+
             </div>
         )
     }
@@ -65,6 +73,7 @@ const TextContainer = styled.div`
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
+    margin-bottom: 100px;
 `
 const Title = styled.div`
   color: #ec7019;
@@ -72,6 +81,20 @@ const Title = styled.div`
   font-size: 18px;
   margin-top: 20px;
   margin-bottom: 20px;
+`
+
+const ActionButton = styled.button`
+  width: 150px;
+  border: none;
+  text-align: center;
+  border-radius: 20px;
+  margin-top: 10px;
+  height: 40px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 15px;
+  margin-right: 20px;
+  background-color: #ec7019;
 `
 
 const Line = styled.div`

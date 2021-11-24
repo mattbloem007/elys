@@ -7,6 +7,16 @@ import woo from "../images/woo.png"
 
 class Woo extends React.Component {
 
+  gotoPage = (page) => {
+      this.hideSideBar()
+      if(page==='homepage'){
+          window.location.href="https://www.elyseos.com"
+          return
+      }
+      sessionStorage.setItem("page",page)
+      this.setState({page: page})
+  }
+
     render = () => {
         return (
             <div style={{display: 'block', width: (isMobile)?350:550, borderRadius: 20, marginLeft: 'auto', marginRight: 'auto', marginTop: 40, marginBottom: 20}}>
@@ -31,7 +41,7 @@ class Woo extends React.Component {
                 <br/>
                 <br/>
                 <TextContainer>
-                  <Title>"Pay With ELYS” Website Button</Title>
+                  <Title onClick={()=>this.gotoPage("plugins")>"Pay With ELYS” Website Button</Title>
                   This tool produces code that you can paste in to a website, it creates a button that enables:
                   <br/>
                   <br/>
@@ -65,8 +75,17 @@ const TextContainer = styled.div`
     margin-left: auto;
     margin-right: auto;
     margin-top: 50px;
+    margin-bottom: 55px;
 `
 const Title = styled.div`
+  color: #ec7019;
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+`
+
+const TitleLink = styled.a`
   color: #ec7019;
   font-weight: bold;
   font-size: 18px;

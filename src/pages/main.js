@@ -113,11 +113,7 @@ class Main extends Component {
               case 'plugins':
                   body = (
                       <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
-<<<<<<< HEAD
-                          <ToolShed />
-=======
-                          <Woo />
->>>>>>> matt-dev
+                          <ToolShed gotoPage={this.gotoPage} />
                       </div>
                   )
                   break
