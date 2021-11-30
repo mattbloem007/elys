@@ -40,6 +40,7 @@ class Main extends Component {
         }
         return false
     }
+
     getPrice = async () => {
         let price = await elysPrice.get()
         if(price.usd===0 || price.ftm===0){
@@ -65,6 +66,7 @@ class Main extends Component {
     }
     gotoPage = (page) => {
         this.hideSideBar()
+        window.scrollTo({ top:0 })
         if(page==='homepage'){
             window.location.href="https://www.elyseos.com"
             return
