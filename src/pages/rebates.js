@@ -4,9 +4,43 @@ import {isMobile} from 'react-device-detect';
 import styled from "styled-components"
 import { Formik, Field, Form, ErrorMessage } from "formik"
 import { Container, Section } from "../global"
+import Web3 from "web3";
+import addresses from '../crypto/contractAddress'
+import abi from '../crypto/abi'
 
+const rpcEndpoint = 'https://xapi.testnet.fantom.network/lachesis' //'https://rpc.ftm.tools/'
+const api = 'https://api-testnet.ftmscan.com/api'
+
+const web3 = new Web3(new Web3.providers.HttpProvider(rpcEndpoint));
+const RebateContract = new web3.eth.Contract(abi.rebate, addresses.rebate);
+
+web3.eth.defaultAccount = web3.eth.accounts[0];
 
 class Rebates extends React.Component {
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+      rebateData: [],
+      claimData: []
+    }
+  }
+
+  componentWillMount = async () =>{
+  //  this.getData()
+  let accs = await web3.eth.getAccounts();
+  let acc = accs[0];
+  this.getData(acc)
+  }
+
+  getData = async (spender) => {
+   RebateContract.methods
+     .getNumClaims(spender)
+     .call()
+     .then((res) => console.log(res));
+ };
+
 
   encode = (data) => {
     return Object.keys(data)

@@ -133,6 +133,13 @@ class Main extends Component {
                       </PageWrapper>
                   )
                   break
+              case 'rebates':
+                body = (
+                  <PageWrapper connected={this.connected}>
+                    <Rebates />
+                  </PageWrapper>
+                )
+              break
 
         }
 
