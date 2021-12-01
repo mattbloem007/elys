@@ -35,6 +35,7 @@ class Forest extends React.Component {
         donationAmount: 1,
         approval: 0,
         lockDays: 0,
+        statsUpdated: false,
         lockInfo: {
             amount: 0,
             lockDays: 0,
@@ -55,7 +56,7 @@ class Forest extends React.Component {
         let amountLeft = await forest.getLeft()
         let balance = await forest.getElysBalance()
         let stats = await forest.getStats()
-        this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0})
+        this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0, statsUpdated: true})
         let lockTokensInfo = await forest.lockTokensInfo()
         console.log(lockTokensInfo)
         this.setState({stats,amountLeft,balance,lockAmount:0,approval: 0, reward: 0, apr: 0,lockTokensInfo,loadingLockTokens:false})
@@ -212,7 +213,7 @@ class Forest extends React.Component {
         //<Locked amountLeft={this.state.amountLeft}/>
         return (
             <div style={{display: 'block', width: (isMobile)?350:550, borderRadius: 20, marginLeft: 'auto', marginRight: 'auto', marginTop: 40, marginBottom: 20}}>
-                <ForestStats stats={this.state.stats} />
+                <ForestStats stats={this.state.stats} statsUpdated={this.state.statsUpdated} />
                 <ForestLock
                 balance={this.state.balance}
                 lockAmountChange={this.lockAmountChanged}

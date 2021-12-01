@@ -4,8 +4,10 @@ import Intro from './intro'
 import UnlockPage from './unlock'
 import FarmPage from './farm'
 import SwapPage from './swap'
+import PluginPage from './plugin'
 import Forest from './forest'
-
+import ToolShed from './toolshed'
+import Rebates from './rebates'
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
@@ -34,10 +36,11 @@ class Main extends Component {
         let provider = await detectEthereumProvider()
         if (provider) {
             window.ethereum = provider
-            return true //window.ethereum.isMetaMask 
+            return true //window.ethereum.isMetaMask
         }
         return false
     }
+
     getPrice = async () => {
         let price = await elysPrice.get()
         if(price.usd===0 || price.ftm===0){
@@ -57,12 +60,13 @@ class Main extends Component {
         return price
     }
     connected = async () => {
-        
+
         this.setState({connected:true})
-        
+
     }
     gotoPage = (page) => {
         this.hideSideBar()
+        window.scrollTo({ top:0 })
         if(page==='homepage'){
             window.location.href="https://www.elyseos.com"
             return
@@ -73,7 +77,7 @@ class Main extends Component {
     hamburgerClick = () => {
         if(!isMobile) return
         this.setState({sideMenuHidden:!this.state.sideMenuHidden})
-    } 
+    }
     hideSideBar = () => {
         if(!isMobile) return
         this.setState({sideMenuHidden:true})
@@ -108,6 +112,21 @@ class Main extends Component {
                     </div>
                 )
                 break
+              case 'plugins':
+                  body = (
+                      <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                          <ToolShed gotoPage={this.gotoPage} />
+                      </div>
+                  )
+                  break
+
+                  case 'pay':
+                      body = (
+                          <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                              <PluginPage />
+                          </div>
+                      )
+                      break
 
               case 'forest':
                   body = (
@@ -116,7 +135,13 @@ class Main extends Component {
                       </PageWrapper>
                   )
                   break
-
+              case 'rebates':
+              body = (
+                  <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                      <Rebates />
+                  </div>
+              )
+              break
 
         }
 

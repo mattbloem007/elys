@@ -53,11 +53,25 @@ const Stats = (props) => {
                 <div style={{display: 'inline-block', marginLeft: 15, marginRight: 15, position: 'relative', top: -11}}>Forest Stats</div>
                 <img src={iboga} alt="" width={40} />
             </div>
-            <div style={statStyle}>{locks}</div>
-            <div style={statStyle}>{formatElys(trimDec(props.stats.totalLocked/1e5,1))} locked</div>
-            <div style={statStyle}>{formatElys(trimDec(props.stats.totalRewards/1e5,1))} rewards pending</div>
-            <div style={statStyle}>{formatElys(trimDec(props.stats.toClaim/1e5,1))} available to be earned</div>
-            <div style={infoStyle}>If no rewards are available to be earned the forest will still be open for staking</div>
+            {
+              props.statsUpdated ?
+              <div>
+                <div style={statStyle}>{locks}</div>
+                <div style={statStyle}>{formatElys(trimDec(props.stats.totalLocked/1e5,1))} locked</div>
+                <div style={statStyle}>{formatElys(trimDec(props.stats.totalRewards/1e5,1))} rewards pending</div>
+                <div style={statStyle}>{formatElys(trimDec(props.stats.toClaim/1e5,1))} available to be earned</div>
+                <div style={infoStyle}>If no rewards are available to be earned the forest will still be open for staking</div>
+              </div>
+              :
+              <div>
+                <div style={statStyle}>{locks}</div>
+                <div style={statStyle}>Loading... locked</div>
+                <div style={statStyle}>Loading... rewards pending</div>
+                <div style={statStyle}>Loading... available to be earned</div>
+                <div style={infoStyle}>If no rewards are available to be earned the forest will still be open for staking</div>
+              </div>
+            }
+
         </div>
     )
 }
