@@ -5,9 +5,137 @@ import styled from "styled-components"
 import { Formik, Field, Form, ErrorMessage } from "formik"
 import { Container, Section } from "../global"
 import Info from '../components/info'
+import axios from 'axios'
+import Web3 from "web3";
+import addresses from '../crypto/contractAddress'
+import abi from '../crypto/abi'
+
+const rpcEndpoint = 'https://xapi.testnet.fantom.network/lachesis' //'https://rpc.ftm.tools/'
+const api = 'https://api-testnet.ftmscan.com/api'
+
+const web3 = new Web3(new Web3.providers.HttpProvider(rpcEndpoint));
+const RebateContract = new web3.eth.Contract(abi.rebate, addresses.rebate);
+const APIKey = 'P4TFDSVTPA75K86MTCQXTGXGN2Z7H7H9BU'
+const elysAddress = '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98'
+const ElysContract = new web3.eth.Contract(abi.elys, elysAddress)
+
+web3.eth.defaultAccount = web3.eth.accounts[0];
 
 
 class Rebates extends React.Component {
+
+  constructor(props){
+    super(props);
+
+    this.state = {
+      rebateData: [],
+      claimData: [],
+      rebate_name: "",
+      rebate_fund: "",
+      percentage: "",
+      max_purchase: "",
+      max_person: "",
+      wallet_address: "",
+      unformattedClaimAmount: 0,
+    }
+  }
+
+  componentWillMount = async () =>{
+    let accs = await web3.eth.getAccounts();
+    let acc = accs[0];
+    //console.log(acc)
+    this.getData("0xaA11a1ee6a4076a06B9753742F86f831aB6B107C")
+    .then(() => console.log(this.state))
+  }
+
+  formatDate = (dt) => {
+      let day = dt.getDate()
+      let month = (dt.getMonth()+1).toString()
+      if(month.length===1)month = '0' + month
+      let year = dt.getFullYear().toString().substr(2)
+      return day + '-' + month + '-' + year
+  }
+
+  getData = async (spender) => {
+   let url = api + '?module=account&action=tokentx&contractaddress=' + elysAddress +  '&offset=1&page=1&sort=desc&apikey=' + APIKey
+   let result = await axios.get(url)
+   let data = result.data
+   console.log(data)
+   let purchaseDate = new Date(parseInt(data.result[0].timeStamp)*1000)
+   purchaseDate = this.formatDate(purchaseDate)
+
+
+   let numClaims = await RebateContract.methods
+     .getNumClaims(spender)
+     .call()
+
+    let claimArr = [];
+    let rebateArr = [];
+    for (let i = 0; i < numClaims; i++) {
+      let claim = await RebateContract.methods
+        .getClaim(spender, i)
+        .call()
+        this.setState({unformattedClaimAmount: claim[1]})
+        let claimed = parseInt(claim[1])/1e5
+        if (claim[1] == "0") {
+          claimed = "claimed"
+        }
+
+
+        if (!claim.claimed) {
+        let numRebates = await RebateContract.methods
+          .getNumRebates(claim.vendor)
+          .call()
+
+          for (let j = 0; j < numRebates; j++) {
+            let rebate = await RebateContract.methods
+              .getRebateByIdx(claim.vendor, j)
+              .call()
+            let b = Buffer.alloc(32)
+            b.write(rebate.substr(2),'hex')
+            let name = b.toString().split('\x00').join('')
+
+            let rebateData = await RebateContract.methods
+              .getRebate(rebate)
+              .call()
+              let amountToClaim = await RebateContract.methods
+                .amountCanClaimTotal(spender, rebate, i)
+                .call()
+            claimArr.push({...claim, date: purchaseDate, value: data.result[0].value/1e5, claimed, idx: j, rebate, spender})
+            rebateArr.push({...rebateData, name, amountToClaim})
+          }
+
+
+
+        }
+
+    }
+    this.setState({claimData: claimArr, rebateData: rebateArr})
+
+ }
+
+ claim = async (spender, rebateID, claimIdx, value) => {
+   console.log("VALUE: ", value)
+   let accs = await web3.eth.getAccounts();
+   let acc = accs[0];
+   await RebateContract.methods
+     .claimRebate(spender, rebateID, claimIdx, value)
+     .send({from: acc})
+ }
+
+ createRebate = async () => {
+   try{
+       await ElysContract.approve(addresses.rebate, this.state.rebate_fund)
+       let b = Buffer.alloc(32)
+       b.write(this.state.rebate_name)
+       let id = '0x' + b.toString('hex')
+       await RebateContract.methods
+         .createRebate(id, this.state.percentage, this.state.max_purchase, this.state.max_person, this.state.wallet_address, this.state.rebate_fund)
+         .call()
+   }
+   catch(e){
+   }
+ }
 
   encode = (data) => {
     return Object.keys(data)
@@ -35,6 +163,21 @@ class Rebates extends React.Component {
                     <ColTitle>Rebate Fund  <Triangle /></ColTitle>
                     <ColTitle>Filled  <Triangle /></ColTitle>
                   </TableGrid>
+                  {
+                    this.state.rebateData ? this.state.rebateData.map((rebate) => {
+                      return (
+                        <TableGrid>
+                          <TableData>{rebate.name}</TableData>
+                          <TableData>{rebate.percOfPurchase}% back</TableData>
+                          <TableData>{rebate.maxPerPerson/1e5} ELYS per buyer<ActionButton>Check my Rebates</ActionButton></TableData>
+                          <TableData>{rebate.elysBalance/1e5} ELYS</TableData>
+                          <TableData>50% back</TableData>
+                        </TableGrid>
+                      )
+                    })
+                    :
+                    null
+                  }
                   <TableGrid>
                     <TableData>Sceletium.com</TableData>
                     <TableData>50% back</TableData>
@@ -51,6 +194,20 @@ class Rebates extends React.Component {
                         <ColTitle>Purchase Amount</ColTitle>
                         <ColTitle>Rebate Due</ColTitle>
                       </GridTitles>
+                      {
+                        this.state.claimData ? this.state.claimData.map((claim) => {
+                          return (
+                            <GridTitles>
+                              <TableData>{claim.date}</TableData>
+                              <TableData>{claim.value} ELYS</TableData>
+                              <TableData>{claim.claimed} ELYS</TableData>
+                              <ActionButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx, this.state.unformattedClaimAmount)}>Claim</ActionButton>
+                            </GridTitles>
+                          )
+                        })
+                        :
+                        null
+                      }
                       <GridTitles>
                         <TableData>10 August 2021</TableData>
                         <TableData>500 ELYS</TableData>
@@ -61,9 +218,9 @@ class Rebates extends React.Component {
                   </OuterContainer>
 
                   <Title>Don't See a Rebate - Check Vendor Wallet</Title>
-                  {/**<div style={{marginTop: 5}}>
-                      <Input onChange={props.lockAmountChange} value={props.lockAmount} defaultValue={0.0} type={'text'} />
-                  </div>*/}
+                  <div style={{marginTop: 5}}>
+                      <Input defaultValue={0.0} type={'text'} />
+                  </div>
                   <Title>Create Rebates</Title>
                   <TextContainer>
                     You may create a rebate here. There is a fee of 100 ELYS to create a rebate.
@@ -101,7 +258,7 @@ class Rebates extends React.Component {
                         <FeaturesGrid>
                         <FeatureItem>
                           <Label >Rebate Name</Label>
-                          <Field name="rebate_name" placeholder="The Name of the offer" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field name="rebate_name" onKeyUp={(value) => this.setState({rebate_name: value.target.value})} placeholder="The Name of the offer" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                         </FeatureItem>
                         </FeaturesGrid>
                       </Flex>
@@ -111,7 +268,7 @@ class Rebates extends React.Component {
                         <FeatureItem>
                           <Label >Total Rebate Fund <span style={{position: 'relative', top: -5, left: -5}}>
                           <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                          <Field name="rebate_fund" placeholder="How many ELYS for all rebates?" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field name="rebate_fund" onKeyUp={(value) => this.setState({rebate_fund: value.target.value})} placeholder="How many ELYS for all rebates?" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                         </FeatureItem>
                         </FeaturesGrid>
                       </Flex>
@@ -121,7 +278,7 @@ class Rebates extends React.Component {
                         <FeatureItem>
                           <Label>Percentage of Purchase <span style={{position: 'relative', top: -5, left: -5}}>
                           <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                          <Field name="percentage" placeholder="Rebate percent" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field name="percentage" onKeyUp={(value) => this.setState({percentage: value.target.value})} placeholder="Rebate percent" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
                         </FeatureItem>
                         </FeaturesGrid>
                       </Flex>
@@ -131,14 +288,14 @@ class Rebates extends React.Component {
                       <FeatureItem>
                         <Label >Max per Purchase <span style={{position: 'relative', top: -5, left: -5}}>
                         <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                        <Field name="max_purchase" placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <Field name="max_purchase" onKeyUp={(value) => this.setState({max_purchase: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                       </FeatureItem>
                       </FeaturesGrid>
                       <FeaturesGrid>
                       <FeatureItem>
                         <Label>Max per Person <span style={{position: 'relative', top: -5, left: -5}}>
                         <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                        <Field name="max_person" placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <Field name="max_person" onKeyUp={(value) => this.setState({max_person: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                       </FeatureItem>
                       </FeaturesGrid>
                       </Flex>
@@ -147,13 +304,13 @@ class Rebates extends React.Component {
                       <FeaturesGrid>
                         <FeatureItem>
                           <Label style={{width: "700px"}}>Payment Wallet</Label>
-                          <Field name="wallet_address" placeholder="If people have paid this wallet they will be eligible to claim rebates" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field name="wallet_address" onKeyUp={(value) => this.setState({wallet_address: value.target.value})} placeholder="If people have paid this wallet they will be eligible to claim rebates" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
                         </FeatureItem>
                       </FeaturesGrid>
                       </Flex>
                       <br/>
                       <ButtonContainer>
-                        <ActionButton style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
+                        <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
                       </ButtonContainer>
                       <br/>
                     </Form>
