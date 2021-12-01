@@ -7,12 +7,15 @@ import { Container, Section } from "../global"
 import Web3 from "web3";
 import addresses from '../crypto/contractAddress'
 import abi from '../crypto/abi'
+import axios from 'axios'
 
 const rpcEndpoint = 'https://xapi.testnet.fantom.network/lachesis' //'https://rpc.ftm.tools/'
 const api = 'https://api-testnet.ftmscan.com/api'
 
 const web3 = new Web3(new Web3.providers.HttpProvider(rpcEndpoint));
 const RebateContract = new web3.eth.Contract(abi.rebate, addresses.rebate);
+const APIKey = 'P4TFDSVTPA75K86MTCQXTGXGN2Z7H7H9BU'
+const elysAddress = '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98'
 
 web3.eth.defaultAccount = web3.eth.accounts[0];
 
@@ -28,18 +31,83 @@ class Rebates extends React.Component {
   }
 
   componentWillMount = async () =>{
-  //  this.getData()
-  let accs = await web3.eth.getAccounts();
-  let acc = accs[0];
-  this.getData(acc)
+    let accs = await web3.eth.getAccounts();
+    let acc = accs[0];
+    //console.log(acc)
+    this.getData("0xaA11a1ee6a4076a06B9753742F86f831aB6B107C")
+    .then(() => console.log(this.state))
+  }
+
+  formatDate = (dt) => {
+      let day = dt.getDate()
+      let month = (dt.getMonth()+1).toString()
+      if(month.length===1)month = '0' + month
+      let year = dt.getFullYear().toString().substr(2)
+      return day + '-' + month + '-' + year
   }
 
   getData = async (spender) => {
-   RebateContract.methods
+   let url = api + '?module=account&action=tokentx&contractaddress=' + elysAddress +  '&offset=1&page=1&sort=desc&apikey=' + APIKey
+   let result = await axios.get(url)
+   let data = result.data
+   console.log(data)
+   let purchaseDate = new Date(parseInt(data.result[0].timeStamp)*1000)
+   purchaseDate = this.formatDate(purchaseDate)
+
+
+   let numClaims = await RebateContract.methods
      .getNumClaims(spender)
      .call()
-     .then((res) => console.log(res));
- };
+
+    let claimArr = [];
+    let rebateArr = [];
+    for (let i = 0; i < numClaims; i++) {
+      let claim = await RebateContract.methods
+        .getClaim(spender, i)
+        .call()
+        let claimed = parseInt(claim[1])/1e5
+        if (claim[1] == "0") {
+          claimed = "claimed"
+        }
+
+
+        if (!claim.claimed) {
+        let numRebates = await RebateContract.methods
+          .getNumRebates(claim.vendor)
+          .call()
+
+          for (let j = 0; j < numRebates; j++) {
+            let rebate = await RebateContract.methods
+              .getRebateByIdx(claim.vendor, j)
+              .call()
+            let b = Buffer.alloc(32)
+            b.write(rebate.substr(2),'hex')
+            let name = b.toString().split('\x00').join('')
+
+            let rebateData = await RebateContract.methods
+              .getRebate(rebate)
+              .call()
+              let amountToClaim = await RebateContract.methods
+                .amountCanClaimTotal(spender, rebate, i)
+                .call()
+            claimArr.push({...claim, date: purchaseDate, value: data.result[0].value/1e5, claimed, idx: j, rebate, spender})
+            rebateArr.push({...rebateData, name, amountToClaim})
+          }
+
+
+
+        }
+
+    }
+    this.setState({claimData: claimArr, rebateData: rebateArr})
+
+ }
+
+ claim = async (spender, rebateID, claimIdx, value) => {
+   RebateContract.methods
+     .claimRebate(spender, rebateID, claimIdx, value)
+     .send({from: "0x135AE14990c2a57fFEA13E6970632B2CcF3757b0"})
+ }
 
 
   encode = (data) => {
@@ -67,6 +135,21 @@ class Rebates extends React.Component {
                     <ColTitle>Rebate Fund  <Triangle /></ColTitle>
                     <ColTitle>Filled  <Triangle /></ColTitle>
                   </TableGrid>
+                  {
+                    this.state.rebateData ? this.state.rebateData.map((rebate) => {
+                      return (
+                        <TableGrid>
+                          <TableData>{rebate.name}</TableData>
+                          <TableData>{rebate.percOfPurchase}% back</TableData>
+                          <TableData>{rebate.maxPerPerson/1e5} ELYS per buyer<ActionButton>Check my Rebates</ActionButton></TableData>
+                          <TableData>{rebate.elysBalance/1e5} ELYS</TableData>
+                          <TableData>50% back</TableData>
+                        </TableGrid>
+                      )
+                    })
+                    :
+                    null
+                  }
                   <TableGrid>
                     <TableData>Sceletium.com</TableData>
                     <TableData>50% back</TableData>
@@ -82,6 +165,20 @@ class Rebates extends React.Component {
                       <ColTitle>Purchase Amount</ColTitle>
                       <ColTitle>Rebate Due</ColTitle>
                     </GridTitles>
+                    {
+                      this.state.claimData ? this.state.claimData.map((claim) => {
+                        return (
+                          <GridTitles>
+                            <TableData>{claim.date}</TableData>
+                            <TableData>{claim.value} ELYS</TableData>
+                            <TableData>{claim.claimed} ELYS</TableData>
+                            <ActionButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx, claim.claimed)}>Claim</ActionButton>
+                          </GridTitles>
+                        )
+                      })
+                      :
+                      null
+                    }
                     <GridTitles>
                       <TableData>10 August 2021</TableData>
                       <TableData>500 ELYS</TableData>
