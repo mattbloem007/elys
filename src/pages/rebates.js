@@ -4,10 +4,11 @@ import {isMobile} from 'react-device-detect';
 import styled from "styled-components"
 import { Formik, Field, Form, ErrorMessage } from "formik"
 import { Container, Section } from "../global"
+import Info from '../components/info'
+import axios from 'axios'
 import Web3 from "web3";
 import addresses from '../crypto/contractAddress'
 import abi from '../crypto/abi'
-import axios from 'axios'
 
 const rpcEndpoint = 'https://xapi.testnet.fantom.network/lachesis' //'https://rpc.ftm.tools/'
 const api = 'https://api-testnet.ftmscan.com/api'
@@ -16,8 +17,10 @@ const web3 = new Web3(new Web3.providers.HttpProvider(rpcEndpoint));
 const RebateContract = new web3.eth.Contract(abi.rebate, addresses.rebate);
 const APIKey = 'P4TFDSVTPA75K86MTCQXTGXGN2Z7H7H9BU'
 const elysAddress = '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98'
+const ElysContract = new web3.eth.Contract(abi.elys, elysAddress)
 
 web3.eth.defaultAccount = web3.eth.accounts[0];
+
 
 class Rebates extends React.Component {
 
@@ -26,7 +29,14 @@ class Rebates extends React.Component {
 
     this.state = {
       rebateData: [],
-      claimData: []
+      claimData: [],
+      rebate_name: "",
+      rebate_fund: "",
+      percentage: "",
+      max_purchase: "",
+      max_person: "",
+      wallet_address: "",
+      unformattedClaimAmount: 0,
     }
   }
 
@@ -65,6 +75,7 @@ class Rebates extends React.Component {
       let claim = await RebateContract.methods
         .getClaim(spender, i)
         .call()
+        this.setState({unformattedClaimAmount: claim[1]})
         let claimed = parseInt(claim[1])/1e5
         if (claim[1] == "0") {
           claimed = "claimed"
@@ -104,11 +115,27 @@ class Rebates extends React.Component {
  }
 
  claim = async (spender, rebateID, claimIdx, value) => {
-   RebateContract.methods
+   console.log("VALUE: ", value)
+   let accs = await web3.eth.getAccounts();
+   let acc = accs[0];
+   await RebateContract.methods
      .claimRebate(spender, rebateID, claimIdx, value)
-     .send({from: "0x135AE14990c2a57fFEA13E6970632B2CcF3757b0"})
+     .send({from: acc})
  }
 
+ createRebate = async () => {
+   try{
+       await ElysContract.approve(addresses.rebate, this.state.rebate_fund)
+       let b = Buffer.alloc(32)
+       b.write(this.state.rebate_name)
+       let id = '0x' + b.toString('hex')
+       await RebateContract.methods
+         .createRebate(id, this.state.percentage, this.state.max_purchase, this.state.max_person, this.state.wallet_address, this.state.rebate_fund)
+         .call()
+   }
+   catch(e){
+   }
+ }
 
   encode = (data) => {
     return Object.keys(data)
@@ -129,7 +156,8 @@ class Rebates extends React.Component {
                     </p>
                   </TextContainer>
                   <TableGrid>
-                    <ColTitle>Vendor  <Triangle /></ColTitle>
+                    <ColTitle>Vendor  <Triangle /><span style={{position: 'relative', top: -5, left: -5}}>
+                    <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></ColTitle>
                     <ColTitle>Rebate %  <Triangle /></ColTitle>
                     <ColTitle>Max Rebate  <Triangle /></ColTitle>
                     <ColTitle>Rebate Fund  <Triangle /></ColTitle>
@@ -158,39 +186,41 @@ class Rebates extends React.Component {
                     <TableData>50% back</TableData>
                   </TableGrid>
 
-                  <BorderedContainer>
-                    <Title>Fairy Godmother inc</Title>
-                    <GridTitles>
-                      <ColTitle>Purchase Date</ColTitle>
-                      <ColTitle>Purchase Amount</ColTitle>
-                      <ColTitle>Rebate Due</ColTitle>
-                    </GridTitles>
-                    {
-                      this.state.claimData ? this.state.claimData.map((claim) => {
-                        return (
-                          <GridTitles>
-                            <TableData>{claim.date}</TableData>
-                            <TableData>{claim.value} ELYS</TableData>
-                            <TableData>{claim.claimed} ELYS</TableData>
-                            <ActionButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx, claim.claimed)}>Claim</ActionButton>
-                          </GridTitles>
-                        )
-                      })
-                      :
-                      null
-                    }
-                    <GridTitles>
-                      <TableData>10 August 2021</TableData>
-                      <TableData>500 ELYS</TableData>
-                      <TableData>claimed</TableData>
-                      <ActionButton>Claim</ActionButton>
-                    </GridTitles>
-                  </BorderedContainer>
+                  <OuterContainer>
+                    <BorderedContainer>
+                      <Title>Fairy Godmother inc</Title>
+                      <GridTitles>
+                        <ColTitle>Purchase Date</ColTitle>
+                        <ColTitle>Purchase Amount</ColTitle>
+                        <ColTitle>Rebate Due</ColTitle>
+                      </GridTitles>
+                      {
+                        this.state.claimData ? this.state.claimData.map((claim) => {
+                          return (
+                            <GridTitles>
+                              <TableData>{claim.date}</TableData>
+                              <TableData>{claim.value} ELYS</TableData>
+                              <TableData>{claim.claimed} ELYS</TableData>
+                              <ActionButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx, this.state.unformattedClaimAmount)}>Claim</ActionButton>
+                            </GridTitles>
+                          )
+                        })
+                        :
+                        null
+                      }
+                      <GridTitles>
+                        <TableData>10 August 2021</TableData>
+                        <TableData>500 ELYS</TableData>
+                        <TableData>claimed</TableData>
+                        <InFormButton>Claim</InFormButton>
+                      </GridTitles>
+                    </BorderedContainer>
+                  </OuterContainer>
 
                   <Title>Don't See a Rebate - Check Vendor Wallet</Title>
-                  {/**<div style={{marginTop: 5}}>
-                      <Input onChange={props.lockAmountChange} value={props.lockAmount} defaultValue={0.0} type={'text'} />
-                  </div>*/}
+                  <div style={{marginTop: 5}}>
+                      <Input defaultValue={0.0} type={'text'} />
+                  </div>
                   <Title>Create Rebates</Title>
                   <TextContainer>
                     You may create a rebate here. There is a fee of 100 ELYS to create a rebate.
@@ -228,40 +258,44 @@ class Rebates extends React.Component {
                         <FeaturesGrid>
                         <FeatureItem>
                           <Label >Rebate Name</Label>
-                          <Field name="rebate_name" placeholder="The Name of the offer" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
-                        </FeatureItem>
-                        </FeaturesGrid>
-                      </Flex>
-                      <br />
-                      <Flex style={{marginBottom: "50px"}}>
-                        <FeaturesGrid>
-                        <FeatureItem>
-                          <Label >Total Rebate Fund </Label>
-                          <Field name="rebate_fund" placeholder="How many ELYS for all rebates?" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
-                        </FeatureItem>
-                        </FeaturesGrid>
-                      </Flex>
-                      <br />
-                      <Flex style={{marginBottom: "50px"}}>
-                        <FeaturesGrid>
-                        <FeatureItem>
-                          <Label>Percentage of Purchase</Label>
-                          <Field name="percentage" placeholder="Rebate percent" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field name="rebate_name" onKeyUp={(value) => this.setState({rebate_name: value.target.value})} placeholder="The Name of the offer" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                         </FeatureItem>
                         </FeaturesGrid>
                       </Flex>
                       <br />
                       <Flex>
+                        <FeaturesGrid>
+                        <FeatureItem>
+                          <Label >Total Rebate Fund <span style={{position: 'relative', top: -5, left: -5}}>
+                          <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
+                          <Field name="rebate_fund" onKeyUp={(value) => this.setState({rebate_fund: value.target.value})} placeholder="How many ELYS for all rebates?" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        </FeatureItem>
+                        </FeaturesGrid>
+                      </Flex>
+                      <br />
+                      <Flex>
+                        <FeaturesGrid>
+                        <FeatureItem>
+                          <Label>Percentage of Purchase <span style={{position: 'relative', top: -5, left: -5}}>
+                          <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
+                          <Field name="percentage" onKeyUp={(value) => this.setState({percentage: value.target.value})} placeholder="Rebate percent" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                        </FeatureItem>
+                        </FeaturesGrid>
+                      </Flex>
+                      <br />
+                      <Flex style={{display: "flex"}}>
                       <FeaturesGrid>
                       <FeatureItem>
-                        <Label >Max per Purchase</Label>
-                        <Field name="max_purchase" placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <Label >Max per Purchase <span style={{position: 'relative', top: -5, left: -5}}>
+                        <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
+                        <Field name="max_purchase" onKeyUp={(value) => this.setState({max_purchase: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                       </FeatureItem>
                       </FeaturesGrid>
                       <FeaturesGrid>
                       <FeatureItem>
-                        <Label>Max per Person</Label>
-                        <Field name="max_person" placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <Label>Max per Person <span style={{position: 'relative', top: -5, left: -5}}>
+                        <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
+                        <Field name="max_person" onKeyUp={(value) => this.setState({max_person: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
                       </FeatureItem>
                       </FeaturesGrid>
                       </Flex>
@@ -270,13 +304,13 @@ class Rebates extends React.Component {
                       <FeaturesGrid>
                         <FeatureItem>
                           <Label style={{width: "700px"}}>Payment Wallet</Label>
-                          <Field name="wallet_address" placeholder="If people have paid this wallet they will be eligible to claim rebates" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field name="wallet_address" onKeyUp={(value) => this.setState({wallet_address: value.target.value})} placeholder="If people have paid this wallet they will be eligible to claim rebates" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
                         </FeatureItem>
                       </FeaturesGrid>
                       </Flex>
                       <br/>
                       <ButtonContainer>
-                        <Submit style={{color: "white", float: "right"}}>Fund & Create Rebate</Submit>
+                        <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
                       </ButtonContainer>
                       <br/>
                     </Form>
@@ -296,9 +330,9 @@ const Label = styled.label`
   letter-spacing: 0px;
   color: #FFFFFF;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
-  font-size: xx-large;
+  font-size: x-large;
   color: #ED6F1B;
   font-weight: bold;
   margin-bottom: 5px;
@@ -308,7 +342,6 @@ const Flex = styled.div`
   display: grid;
   justify-content: space-between;
   align-content: center;
-  grid-template-columns: 300px 300px 200px;
   margin-bottom: 20px;
   @media (max-width: 570px) {
     grid-template-columns: 1fr;
@@ -346,12 +379,12 @@ const Triangle = styled.div`
 const ColTitle = styled.div`
   width: 171px;
   height: 47px;
-  font-size: 25px;
+  font-size: 20px;
 `
 const Title = styled.div`
   color: #ec7019;
   font-weight: bold;
-  font-size: 18px;
+  font-size: 25px;
   margin-top: 20px;
   margin-bottom: 20px;
 `
@@ -360,8 +393,8 @@ const TableGrid = styled.div`
   max-width: 670px;
   display: grid;
   grid-template-columns: repeat(5,1fr);
-  grid-column-gap: 40px;
-  grid-row-gap: 20px;
+  grid-column-gap: 9px;
+  grid-row-gap: 9px;
   margin-bottom: 10px;
   @media (max-width: 570px) {
     grid-template-columns: 1fr;
@@ -377,21 +410,39 @@ const TableData = styled.p`
   font-size: 15px;
 `
 
-const ActionButton = styled.div`
-  width: 115px;
-  background-color: #ec7019;
+const ActionButton = styled.button`
+  width: 150px;
   border: none;
+  text-align: center;
   border-radius: 20px;
-  height: 25px;
+  margin-top: 10px;
+  height: 40px;
   color: #ffffff;
   font-weight: bold;
-  font-size: 12px;
-  margin-top:5px;
+  font-size: 15px;
   margin-right: 20px;
-  text-align: center;
+  background-color: #ec7019;
 `
 
-const BorderedContainer = styled(Container)`
+const InFormButton = styled.button`
+  width: 100px;
+  border: none;
+  text-align: center;
+  border-radius: 20px;
+  margin-top: 10px;
+  height: 40px;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 15px;
+  margin-right: 20px;
+  background-color: #ec7019;
+`
+const OuterContainer = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+`
+
+const BorderedContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -399,17 +450,21 @@ const BorderedContainer = styled(Container)`
   padding: 10px 50px 40px;
   border: solid 2px #ED6F1B;
   padding-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-top: 40px;
+  margin-left: auto;
+  margin-right: auto;
   border-radius: 20px;
-  width: 98%;
-  position: relative;
+
 `
 
 const GridTitles = styled.div`
   max-width: 670px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 180px);
   margin: 0px auto;
-  grid-column-gap: 40px;
+  grid-column-gap: 20px;
   grid-row-gap: 20px;
   margin-bottom: 10px;
   @media (max-width: 570px) {
@@ -421,6 +476,17 @@ const GridTitles = styled.div`
 const FeaturesGrid = styled.div`
   max-width: 670px;
   display: grid;
+  grid-column-gap: 40px;
+  grid-row-gap: 35px;
+  @media (max-width: 570px) {
+    grid-template-columns: 1fr;
+    padding: 0 64px;
+  }
+`
+
+const FeaturesGrid2 = styled.div`
+  max-width: 670px;
+  display: flex;
   grid-column-gap: 40px;
   grid-row-gap: 35px;
   @media (max-width: 570px) {
