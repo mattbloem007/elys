@@ -135,6 +135,13 @@ class Main extends Component {
                       </PageWrapper>
                   )
                   break
+              case 'rebates':
+              body = (
+                  <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
+                      <Rebates />
+                  </div>
+              )
+              break
 
         }
 

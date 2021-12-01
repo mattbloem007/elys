@@ -164,6 +164,7 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Toolshed</Link>
                 {sub}
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
+                <Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>
 
             </div>
             <div style={{
