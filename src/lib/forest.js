@@ -67,6 +67,19 @@ const approve = async (amount) => {
     return {success: true}
 }
 
+const approveRebate = async (amount) => {
+
+    let elys = await getElysContract()
+    try{
+        await elys.approve(["0x135AE14990c2a57fFEA13E6970632B2CcF3757b0",amount*1e5])
+    }
+    catch(e){
+        return {error: e.message}
+    }
+    await wait(5000)
+    return {success: true}
+}
+
 const getAccount = async () => {
     let accs = await window.web3.eth.getAccounts();
     let acc = accs[0];
@@ -89,7 +102,7 @@ const getTokenId = async () => {
 const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
     donation = donation || 0
-    
+
     let acc = await getAccount()
     let elys = await getElysContract()
     let spender = getAddress('forestFactory')
@@ -250,7 +263,8 @@ let $ = {
     getLeft,
     getStats,
     getAccount,
-    getNetwork
+    getNetwork,
+    approveRebate
 };
 
 
