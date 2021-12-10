@@ -121,7 +121,7 @@ const Price = (props) => {
 
 
 const Menu = (props) => {
-    console.log(props)
+    //console.log(props)
     let style={
         display: 'inline-block',
         backgroundColor: '#facbac',
@@ -164,7 +164,7 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Toolshed</Link>
                 {sub}
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
-                {/**<Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>*/}
+                <Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>
 
             </div>
             <div style={{

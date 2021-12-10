@@ -1393,7 +1393,390 @@ const abi = {
             "stateMutability": "view",
             "type": "function"
         }
-    ]
+    ],
+    rebate: [
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "tokenAddress",
+					"type": "address"
+				}
+			],
+			"stateMutability": "nonpayable",
+			"type": "constructor"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "previousOwner",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "OwnershipTransferred",
+			"type": "event"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "spender",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "rebateId",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "uint256",
+					"name": "claimIdx",
+					"type": "uint256"
+				}
+			],
+			"name": "amountCanClaimTotal",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "spender",
+					"type": "address"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "rebateId",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "uint256",
+					"name": "claimIdx",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "claimRebate",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "id",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "uint256",
+					"name": "percOfPurchase",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "maxPerPurchase",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "maxPerPerson",
+					"type": "uint256"
+				},
+				{
+					"internalType": "address",
+					"name": "vendor",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "createRebate",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "spender",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "idx",
+					"type": "uint256"
+				}
+			],
+			"name": "getClaim",
+			"outputs": [
+				{
+					"components": [
+						{
+							"internalType": "address",
+							"name": "vendor",
+							"type": "address"
+						},
+						{
+							"internalType": "uint256",
+							"name": "value",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "ts",
+							"type": "uint256"
+						},
+						{
+							"internalType": "bool",
+							"name": "claimed",
+							"type": "bool"
+						}
+					],
+					"internalType": "struct Rebates.Claim",
+					"name": "",
+					"type": "tuple"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "spender",
+					"type": "address"
+				}
+			],
+			"name": "getNumClaims",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "vendor",
+					"type": "address"
+				}
+			],
+			"name": "getNumRebates",
+			"outputs": [
+				{
+					"internalType": "uint256",
+					"name": "",
+					"type": "uint256"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "id",
+					"type": "bytes32"
+				}
+			],
+			"name": "getRebate",
+			"outputs": [
+				{
+					"components": [
+						{
+							"internalType": "uint256",
+							"name": "percOfPurchase",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "maxPerPurchase",
+							"type": "uint256"
+						},
+						{
+							"internalType": "uint256",
+							"name": "maxPerPerson",
+							"type": "uint256"
+						},
+						{
+							"internalType": "address",
+							"name": "vendor",
+							"type": "address"
+						},
+						{
+							"internalType": "uint256",
+							"name": "elysBalance",
+							"type": "uint256"
+						}
+					],
+					"internalType": "struct Rebates.Rebate",
+					"name": "",
+					"type": "tuple"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "vendor",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "idx",
+					"type": "uint256"
+				}
+			],
+			"name": "getRebateByIdx",
+			"outputs": [
+				{
+					"internalType": "bytes32",
+					"name": "",
+					"type": "bytes32"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "owner",
+			"outputs": [
+				{
+					"internalType": "address",
+					"name": "",
+					"type": "address"
+				}
+			],
+			"stateMutability": "view",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "vendor",
+					"type": "address"
+				},
+				{
+					"internalType": "address",
+					"name": "spender",
+					"type": "address"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "ts",
+					"type": "uint256"
+				},
+				{
+					"internalType": "bytes32",
+					"name": "txhash",
+					"type": "bytes32"
+				}
+			],
+			"name": "registerClaim",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [],
+			"name": "renounceOwnership",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "bytes32",
+					"name": "id",
+					"type": "bytes32"
+				},
+				{
+					"internalType": "uint256",
+					"name": "value",
+					"type": "uint256"
+				}
+			],
+			"name": "topUp",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "newOwner",
+					"type": "address"
+				}
+			],
+			"name": "transferOwnership",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "address",
+					"name": "registrar",
+					"type": "address"
+				},
+				{
+					"internalType": "bool",
+					"name": "canRegister",
+					"type": "bool"
+				}
+			],
+			"name": "updateClaimRegistrar",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		}
+	]
 }
 
 export default abi

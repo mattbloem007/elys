@@ -37,22 +37,11 @@ function PluginPage() {
   return (
     <Section id="features">
       <StyledSection>
-      <TextContainer>
-        <Title>“Pay With ELYS” Website button</Title>
-        This tool produces code that you can paste in to a website, it creates a button that enables:
-        <br/>
-        <br/>
-        - Payments or Donations in ELYS
-        <br/>
-        <br/>
-        - Pricing in ELYS or USD (USD prices will be converted to ELYS when payment happens)
-        <br/>
-        <br/>
-        - Sending of instructions to the donor/buyer for next steps.  We suggest you give them an email or instant message account (e.g. telegram) that they can contact you via.  Get the details you need from them for fulfilment such as email address, physical address, contact number. We also suggest you ask them to send you the transaction ID so you can cross-check their payment.
-        <br/>
-        <br/>
-        - If you wish to place more than one button on the same webpage the code needs a slight tweak. Please contact us in our Discord at #tech-discussion and we will help you out.
-      </TextContainer>
+        <SectionTitle style={{color: "#ED6F1B"}}>“Pay With ELYS” Website button</SectionTitle>
+          <FeatureText style={{color: "white"}}>This tool produces code that you can plug-in to any website, it allows:</FeatureText>
+          <FeatureText>- Payments in ELYS</FeatureText>
+          <FeatureText>- Pricing in ELYS</FeatureText>
+          <FeatureText>Once people have paid you - you will be able to unlock and read their fulfilment instructions</FeatureText>
         <GetStartedContainer>
             <Formik
               initialValues={{ instructions: "", price: "", product_id: "", product_name: "", walletAddress: "" }}
@@ -200,23 +189,6 @@ const StyledContainer = styled(Container)``
 
 const StyledSection = styled(Section)`
   background-color: #231B17;
-`
-
-const TextContainer = styled.div`
-    display: block;
-    width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 50px;
-    margin-bottom: 70px;
-`
-
-const Title = styled.div`
-  color: #ec7019;
-  font-weight: bold;
-  font-size: 18px;
-  margin-top: 20px;
-  margin-bottom: 20px;
 `
 
 const SectionTitle = styled.h3`
@@ -402,7 +374,13 @@ const GetStartedContainer = styled(Container)`
 `
 
 const Submit = styled.button`
-
+<<<<<<< HEAD
+  width: 167px;
+  height: 32px;
+  float: right;
+  background: #ED6F1B 0% 0% no-repeat padding-box;
+  border-radius: 45px;
+=======
   width: 150px;
   background-color: #ec7019;
   border: none;
@@ -412,6 +390,7 @@ const Submit = styled.button`
   font-weight: bold;
   font-size: 15px;
   margin-right: 20px;
+>>>>>>> dev
 `
 const FeatureItem = styled.div`
   display: flex;

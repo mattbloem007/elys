@@ -5,7 +5,8 @@ const addresses = {
     lockFactoryTeam: '0x19DeC8d99a786f5F876a6bD17c91E3CF0c0f0306',
     elysFtmPair: '0x6831b2EDe25Dcc957256FAE815f051181F6C7b08',
     ftmUsdPair: '0x2b4C76d0dc16BE1C31D4C1DC53bF9B45987Fc75c',
-    forestFactory: '0x4000723Ce9354e9085783A6Cd533BD528327D23E'
+    forestFactory: '0x4000723Ce9354e9085783A6Cd533BD528327D23E',
+    rebate: '0x135AE14990c2a57fFEA13E6970632B2CcF3757b0' //
 }
 
 export default addresses

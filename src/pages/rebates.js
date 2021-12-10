@@ -8,44 +8,83 @@ import Info from '../components/info'
 import axios from 'axios'
 import Web3 from "web3";
 import addresses from '../crypto/contractAddress'
+import detectEthereumProvider from '@metamask/detect-provider'
 import abi from '../crypto/abi'
+import forest from '../lib/forest'
+import _ from 'lodash'
 
-const rpcEndpoint = 'https://xapi.testnet.fantom.network/lachesis' //'https://rpc.ftm.tools/'
-const api = 'https://api-testnet.ftmscan.com/api'
+//const rpcEndpoint = 'https://xapi.testnet.fantom.network/lachesis' //'https://rpc.ftm.tools/'
+//const api = 'https://api-testnet.ftmscan.com/api'
 
-const web3 = new Web3(new Web3.providers.HttpProvider(rpcEndpoint));
-const RebateContract = new web3.eth.Contract(abi.rebate, addresses.rebate);
+//const web3 = new Web3(new Web3.providers.HttpProvider(rpcEndpoint));
+//const RebateContract = new web3.eth.Contract(abi.rebate, addresses.rebate);
 const APIKey = 'P4TFDSVTPA75K86MTCQXTGXGN2Z7H7H9BU'
 const elysAddress = '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98'
-const ElysContract = new web3.eth.Contract(abi.elys, elysAddress)
+//const ElysContract = new web3.eth.Contract(abi.elys, elysAddress)
+//console.log("CONTRACT: ", ElysContract)
 
-web3.eth.defaultAccount = web3.eth.accounts[0];
+window.forest = forest;
 
 
 class Rebates extends React.Component {
 
   constructor(props){
     super(props);
-
     this.state = {
       rebateData: [],
       claimData: [],
+      specificClaimData: [],
+      vendorList: [],
+      rebateIDs: [],
+      claimTitle: "Click Check My Rebates to view Claims",
       rebate_name: "",
       rebate_fund: "",
       percentage: "",
       max_purchase: "",
       max_person: "",
       wallet_address: "",
+      spender: "",
       unformattedClaimAmount: 0,
+      loading: true,
+      hasMetamask: false,
+      isConnected: false,
+      ElysContract: null,
+      RebateContract: null,
+      currentAccount: "",
     }
   }
 
+  checkMetamask = async () => {
+      let provider = await detectEthereumProvider({mustBeMetaMask:true})
+      if (provider) {
+          window.ethereum = provider
+          return true //window.ethereum.isMetaMask
+      }
+      return false
+  }
+
   componentWillMount = async () =>{
-    let accs = await web3.eth.getAccounts();
-    let acc = accs[0];
-    //console.log(acc)
-    this.getData("0xaA11a1ee6a4076a06B9753742F86f831aB6B107C")
+    let hasMetamask = await this.checkMetamask()
+    if(hasMetamask){
+        window.web3 = new Web3(window.ethereum);
+        if(!window.ethereum.isConnected){
+            this.setState({loading: false,hasMetamask: true, isConnected: false})
+            return
+        }
+        let accounts = await window.web3.eth.getAccounts();
+        let connected = accounts.length>0
+        let RebateContract = new window.web3.eth.Contract(abi.rebate, addresses.rebate);
+        let ElysContract = new window.web3.eth.Contract(abi.elys, elysAddress)
+        this.setState({loading: false,hasMetamask: true, isConnected: connected, RebateContract, ElysContract, currentAccount: accounts[0]})
+    }
+    // let b = Buffer.alloc(32)
+    // b.write('Rebate 3 Ten Thousand')
+    // let id = '0x' + b.toString('hex')
+    // console.log(id)
+
+    this.getData(this.state.currentAccount)
     .then(() => console.log(this.state))
+
   }
 
   formatDate = (dt) => {
@@ -56,85 +95,230 @@ class Rebates extends React.Component {
       return day + '-' + month + '-' + year
   }
 
+  checkMyRebates = async (idx, spender, vendor) => {
+    console.log("REBATE DATA:", idx, spender, vendor)
+    let rebate = await this.state.RebateContract.methods
+      .getRebateByIdx(vendor, idx)
+      .call()
+
+    let b = Buffer.alloc(32)
+    b.write(rebate.substr(2),'hex')
+    let name = b.toString().split('\x00').join('')
+    console.log("Rebate ID:", rebate, name)
+    let newClaimArr = []
+    for (let i = 0; i < this.state.claimData.length; i++) {
+      console.log(this.state.claimData[i])
+      if (this.state.claimData[i].rebate == rebate) {
+        newClaimArr.push(this.state.claimData[i])
+      }
+    }
+    console.log(newClaimArr)
+    this.setState({specificClaimData: newClaimArr, claimTitle: name})
+    //   let amountToClaim = await RebateContract.methods
+    //     .amountCanClaimTotal(spender, rebate, idx)
+    //     .call()
+    //
+    // this.setState({rebateData: {...this.state.rebateData, name, amountToClaim, idx}})
+  }
+
   getData = async (spender) => {
-   let url = api + '?module=account&action=tokentx&contractaddress=' + elysAddress +  '&offset=1&page=1&sort=desc&apikey=' + APIKey
-   let result = await axios.get(url)
-   let data = result.data
-   console.log(data)
-   let purchaseDate = new Date(parseInt(data.result[0].timeStamp)*1000)
-   purchaseDate = this.formatDate(purchaseDate)
 
-
-   let numClaims = await RebateContract.methods
+   let numClaims = await this.state.RebateContract.methods
      .getNumClaims(spender)
      .call()
-
+    console.log("numClaims", numClaims)
     let claimArr = [];
     let rebateArr = [];
+    let rebateIdsArr = [];
+    let vendors = [];
+    let j = 0;
     for (let i = 0; i < numClaims; i++) {
-      let claim = await RebateContract.methods
+
+      let claim = await this.state.RebateContract.methods
         .getClaim(spender, i)
         .call()
+        let purchaseDate = new Date(parseInt(claim.ts)*1000)
+        purchaseDate = this.formatDate(purchaseDate)
+      //  console.log("claim", claim)
         this.setState({unformattedClaimAmount: claim[1]})
-        let claimed = parseInt(claim[1])/1e5
-        if (claim[1] == "0") {
-          claimed = "claimed"
-        }
+          vendors.push(claim.vendor)
+          claimArr.push({...claim, date: purchaseDate, value: claim[1]/1e5, spender, idx: i})
+      //  }
+
+       // if (!claim.claimed) {
+        // let numRebates = await RebateContract.methods
+        //   .getNumRebates(claim.vendor)
+        //   .call()
+        //   console.log("Num Rebates", claim.vendor, numRebates)
+       //    while (j < numRebates) {
+       //      let rebate = await RebateContract.methods
+       //        .getRebateByIdx(claim.vendor, j)
+       //        .call()
+       //      let b = Buffer.alloc(32)
+       //      b.write(rebate.substr(2),'hex')
+       //      let name = b.toString().split('\x00').join('')
+       //
+       //      let rebateData = await RebateContract.methods
+       //        .getRebate(rebate)
+       //        .call()
+       //        // let amountToClaim = await RebateContract.methods
+       //        //   .amountCanClaimTotal(spender, rebate, i)
+       //        //   .call()
+       //      rebateIdsArr.push({id: rebate, idx: j, spender})
+       //      //claimArr[j].rebate = rebate
+       //    //  claimArr[j].amountToClaim = amountToClaim
+       //    //  rebateArr.push({...rebateData, name, amountToClaim, idx: i, spender})
+       //    rebateArr.push({...rebateData, name, idx: j, spender})
+       //      j++;
+       //    }
+       //
+       //  }
+    }
+
+    // let vendor = "";
+    // for(let i = 0; i < claimArr.length; i++) {
+    //   if (claimArr[i].vendor != vendor) {
+    //       vendor = claimArr[i].vendor
+    //       let numRebates = await RebateContract.methods
+    //          .getNumRebates(vendor)
+    //          .call()
+    //       if (numRebates > 0) {
+    //         let rebate = await RebateContract.methods
+    //              .getRebateByIdx(vendor, i)
+    //              .call()
+    //         let b = Buffer.alloc(32)
+    //         b.write(rebate.substr(2),'hex')
+    //         let name = b.toString().split('\x00').join('')
+    //         let rebateData = await RebateContract.methods
+    //              .getRebate(rebate)
+    //              .call()
+    //         let amountToClaim = await RebateContract.methods
+    //              .amountCanClaimTotal(spender, rebate, i)
+    //              .call()
+    //
+    //         rebateArr.push({...rebateData, name, amountToClaim})
+    //
+    //       }
+    //   }
+    // }
+
+    vendors = _.uniq(vendors)
+
+  //  vendors.map(async (vendor, i) => {
+      for (let l = 0; l < vendors.length; l++) {
+
+      let numRebates = await this.state.RebateContract.methods
+        .getNumRebates(vendors[l])
+        .call()
+        j = 0;
+        while (j < numRebates) {
+          console.log("Num:", vendors[l], j)
+         let rebate = await this.state.RebateContract.methods
+           .getRebateByIdx(vendors[l], j)
+           .call()
+         let b = Buffer.alloc(32)
+         b.write(rebate.substr(2),'hex')
+         let name = b.toString().split('\x00').join('')
+
+         let rebateData = await this.state.RebateContract.methods
+           .getRebate(rebate)
+           .call()
+
+           for (let k = 0; k < claimArr.length; k++) {
+             if (!claimArr[k].rebate) {
+               if (claimArr[k].vendor == vendors[l]) {
+                 claimArr[k] = {...claimArr[k], rebate}
+               }
+             }
+
+           }
 
 
-        if (!claim.claimed) {
-        let numRebates = await RebateContract.methods
-          .getNumRebates(claim.vendor)
+         rebateIdsArr.push({vendor: vendors[l], id: rebate, idx: l, spender})
+         rebateArr.push({...rebateData, name, idx: j, spender})
+         j++;
+       }
+    }
+
+    this.setState({claimData: claimArr, vendorList: vendors, spender, rebateData: rebateArr, rebateIDs: rebateIdsArr})
+    // this.getRebates(vendors, spender, claimArr)
+    // .then(() => console.log(this.state))
+ }
+
+ getRebates = async (vendors, spender, claims) => {
+   let j = 0;
+   let rebateArr = [];
+   let rebateIdsArr = [];
+   let claimArr = [];
+
+   vendors.map(async (vendor, i) => {
+     let numRebates = await this.state.RebateContract.methods
+       .getNumRebates(vendor)
+       .call()
+       while (j < numRebates) {
+        let rebate = await this.state.RebateContract.methods
+          .getRebateByIdx(vendor, j)
+          .call()
+        let b = Buffer.alloc(32)
+        b.write(rebate.substr(2),'hex')
+        let name = b.toString().split('\x00').join('')
+
+        let rebateData = await this.state.RebateContract.methods
+          .getRebate(rebate)
           .call()
 
-          for (let j = 0; j < numRebates; j++) {
-            let rebate = await RebateContract.methods
-              .getRebateByIdx(claim.vendor, j)
-              .call()
-            let b = Buffer.alloc(32)
-            b.write(rebate.substr(2),'hex')
-            let name = b.toString().split('\x00').join('')
-
-            let rebateData = await RebateContract.methods
-              .getRebate(rebate)
-              .call()
-              let amountToClaim = await RebateContract.methods
-                .amountCanClaimTotal(spender, rebate, i)
-                .call()
-            claimArr.push({...claim, date: purchaseDate, value: data.result[0].value/1e5, claimed, idx: j, rebate, spender})
-            rebateArr.push({...rebateData, name, amountToClaim})
+          for (let k = 0; k < claims.length; k++) {
+            //console.log("IN CLAIM MAP", claims[k].vendor)
+            if (claims[k].vendor == vendor) {
+              claimArr.push({...claims[k], rebate})
+              //console.log("IN CLAIM IF", claimArr)
+            }
           }
 
 
+        rebateIdsArr.push({vendor, id: rebate, idx: i, spender})
+        rebateArr.push({...rebateData, name, idx: j, spender})
+        j++;
+      }
+   })
 
-        }
 
-    }
-    this.setState({claimData: claimArr, rebateData: rebateArr})
+   this.setState({rebateData: rebateArr, rebateIDs: rebateIdsArr})
 
  }
 
- claim = async (spender, rebateID, claimIdx, value) => {
-   console.log("VALUE: ", value)
-   let accs = await web3.eth.getAccounts();
-   let acc = accs[0];
-   await RebateContract.methods
-     .claimRebate(spender, rebateID, claimIdx, value)
-     .send({from: acc})
+ claim = async (spender, rebate, claimIdx) => {
+   // let accs = await web3.eth.getAccounts();
+   // let acc = accs[0];
+   //console.log("claim: ", spender, rebate, claimIdx)
+   let amountToClaim = await this.state.RebateContract.methods
+     .amountCanClaimTotal(spender, rebate, claimIdx)
+     .call()
+
+   console.log("Claim Data: ", spender, rebate, claimIdx, amountToClaim)
+   await this.state.RebateContract.methods
+     .claimRebate(spender, rebate, claimIdx, amountToClaim)
+     .send({from: this.state.currentAccount})
  }
 
  createRebate = async () => {
-   try{
-       await ElysContract.approve(addresses.rebate, this.state.rebate_fund)
+       await forest.approveRebate(this.state.rebate_fund)
+       .then((res) => console.log("Approved: ", res))
        let b = Buffer.alloc(32)
        b.write(this.state.rebate_name)
        let id = '0x' + b.toString('hex')
-       await RebateContract.methods
-         .createRebate(id, this.state.percentage, this.state.max_purchase, this.state.max_person, this.state.wallet_address, this.state.rebate_fund)
-         .call()
-   }
-   catch(e){
-   }
+       console.log(id, this.state.percentage, this.state.max_purchase*1e5, this.state.max_person*1e5, this.state.wallet_address, this.state.rebate_fund*1e5)
+       try {
+         await this.state.RebateContract.methods
+           .createRebate(id, this.state.percentage, this.state.max_purchase*1e5, this.state.max_person*1e5, this.state.wallet_address, this.state.rebate_fund*1e5)
+           .send({from: this.state.currentAccount})
+           .then((res) => console.log(res))
+       }
+       catch(e) {
+         console.log("ERROR: ", e)
+       }
+
+
  }
 
   encode = (data) => {
@@ -164,56 +348,44 @@ class Rebates extends React.Component {
                     <ColTitle>Filled  <Triangle /></ColTitle>
                   </TableGrid>
                   {
-                    this.state.rebateData ? this.state.rebateData.map((rebate) => {
+                    this.state.rebateData.map((rebate, i) => {
                       return (
-                        <TableGrid>
+                        <TableGrid key={i}>
                           <TableData>{rebate.name}</TableData>
                           <TableData>{rebate.percOfPurchase}% back</TableData>
-                          <TableData>{rebate.maxPerPerson/1e5} ELYS per buyer<ActionButton>Check my Rebates</ActionButton></TableData>
+                          <TableData>{rebate.maxPerPerson/1e5} ELYS per buyer<ActionButton onClick={() => this.checkMyRebates(rebate.idx, rebate.spender, rebate.vendor)}>Check my Rebates</ActionButton></TableData>
                           <TableData>{rebate.elysBalance/1e5} ELYS</TableData>
                           <TableData>50% back</TableData>
                         </TableGrid>
                       )
                     })
-                    :
-                    null
+
                   }
-                  <TableGrid>
-                    <TableData>Sceletium.com</TableData>
-                    <TableData>50% back</TableData>
-                    <TableData>20000 ELYS per buyer<ActionButton>Check my Rebates</ActionButton></TableData>
-                    <TableData>50,000 ELYS</TableData>
-                    <TableData>50% back</TableData>
-                  </TableGrid>
 
                   <OuterContainer>
                     <BorderedContainer>
-                      <Title>Fairy Godmother inc</Title>
+                      <Title>{this.state.claimTitle}</Title>
                       <GridTitles>
                         <ColTitle>Purchase Date</ColTitle>
                         <ColTitle>Purchase Amount</ColTitle>
                         <ColTitle>Rebate Due</ColTitle>
                       </GridTitles>
                       {
-                        this.state.claimData ? this.state.claimData.map((claim) => {
+                        this.state.specificClaimData.map((claim) => {
+                          let claimAmount = claim.value.toString() + "ELYS"
+                          if (claim.claimed) {
+                            claimAmount = "claimed"
+                          }
                           return (
                             <GridTitles>
                               <TableData>{claim.date}</TableData>
                               <TableData>{claim.value} ELYS</TableData>
-                              <TableData>{claim.claimed} ELYS</TableData>
-                              <ActionButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx, this.state.unformattedClaimAmount)}>Claim</ActionButton>
+                              <TableData>{claimAmount}</TableData>
+                              <InFormButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx)}>Claim</InFormButton>
                             </GridTitles>
                           )
                         })
-                        :
-                        null
                       }
-                      <GridTitles>
-                        <TableData>10 August 2021</TableData>
-                        <TableData>500 ELYS</TableData>
-                        <TableData>claimed</TableData>
-                        <InFormButton>Claim</InFormButton>
-                      </GridTitles>
                     </BorderedContainer>
                   </OuterContainer>
 
@@ -229,18 +401,19 @@ class Rebates extends React.Component {
                   <Formik
                     initialValues={{ rebate_name: "", rebate_fund: "", percentage: "", max_purchase: "", max_person: "", wallet_address: "" }}
                     onSubmit={(data, {resetForm, setFieldValue}) => {
-                        fetch("/", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                          body: this.encode({
-                            "form-name": "rebates-form",
-                            ...data,
-                          }),
-                        })
-                          .then((form) => {
-                            console.log(form)
-                          })
-                          .catch(error => alert(error))
+                      //this.createRebate()
+                        // fetch("/", {
+                        //   method: "POST",
+                        //   headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                        //   body: this.encode({
+                        //     "form-name": "rebates-form",
+                        //     ...data,
+                        //   }),
+                        // })
+                        //   .then((form) => {
+                        //     console.log(form)
+                        //   })
+                        //   .catch(error => alert(error))
 
                     }}
                   >
@@ -422,6 +595,10 @@ const ActionButton = styled.button`
   font-size: 15px;
   margin-right: 20px;
   background-color: #ec7019;
+  &:hover {
+    cursor: pointer;
+  }
+
 `
 
 const InFormButton = styled.button`
@@ -436,6 +613,9 @@ const InFormButton = styled.button`
   font-size: 15px;
   margin-right: 20px;
   background-color: #ec7019;
+  &:hover {
+    cursor: pointer;
+  }
 `
 const OuterContainer = styled.div`
   margin-left: auto;

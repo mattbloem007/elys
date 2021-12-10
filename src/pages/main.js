@@ -136,11 +136,11 @@ class Main extends Component {
                   )
                   break
               case 'rebates':
-              body = (
-                  <div style={{display: 'flex', position: 'relative', minHeight: 700}}>
-                      <Rebates />
-                  </div>
-              )
+                body = (
+                  <PageWrapper connected={this.connected}>
+                    <Rebates />
+                  </PageWrapper>
+                )
               break
 
         }
