@@ -3,6 +3,7 @@ import React from 'react'
 import {isMobile} from 'react-device-detect';
 import styled from "styled-components"
 import { Formik, Field, Form, ErrorMessage } from "formik"
+import * as Yup from "yup";
 import { Container, Section } from "../global"
 import Info from '../components/info'
 import axios from 'axios'
@@ -38,6 +39,10 @@ class Rebates extends React.Component {
       max_person: "",
       wallet_address: "",
       spender: "",
+      rebate_fund_Error: false,
+      percentage_Error: false,
+      max_purchase_Error: false,
+      max_person_Error: false,
       unformattedClaimAmount: 0,
       loading: true,
       hasMetamask: false,
@@ -45,7 +50,9 @@ class Rebates extends React.Component {
       ElysContract: null,
       RebateContract: null,
       currentAccount: "",
-      dataFeedback: "Loading..."
+      dataFeedback: "Loading...",
+      rebateApproved: false,
+      approving: false
     }
   }
 
@@ -106,7 +113,6 @@ class Rebates extends React.Component {
     console.log("Rebate ID:", rebate, name)
     let newClaimArr = []
     for (let i = 0; i < this.state.claimData.length; i++) {
-      console.log(this.state.claimData[i])
       if (this.state.claimData[i].rebate == rebate) {
         newClaimArr.push(this.state.claimData[i])
       }
@@ -162,7 +168,10 @@ class Rebates extends React.Component {
            for (let k = 0; k < claimArr.length; k++) {
              if (!claimArr[k].rebate) {
                if (claimArr[k].vendor == vendors[l]) {
-                 claimArr[k] = {...claimArr[k], rebate}
+                 let amountToClaim = await this.state.RebateContract.methods
+                   .amountCanClaimTotal(spender, rebate, k)
+                   .call()
+                 claimArr[k] = {...claimArr[k], rebate, amountCanClaim: amountToClaim/1e5}
                }
              }
 
@@ -229,9 +238,17 @@ class Rebates extends React.Component {
      .send({from: this.state.currentAccount})
  }
 
+ validateForm = () => {
+
+ }
+
+ approveRebate = async () => {
+  this.setState({approving: true})
+  await forest.approveRebate(this.state.rebate_fund)
+  .then((res) => this.setState({rebateApproved: true, approving: false}))
+}
+
  createRebate = async () => {
-       await forest.approveRebate(this.state.rebate_fund)
-       .then((res) => console.log("Approved: ", res))
        let b = Buffer.alloc(32)
        b.write(this.state.rebate_name)
        let id = '0x' + b.toString('hex')
@@ -303,7 +320,7 @@ class Rebates extends React.Component {
                       </GridTitles>
                       {
                         this.state.specificClaimData.map((claim) => {
-                          let claimAmount = claim.value.toString() + "ELYS"
+                          let claimAmount = claim.amountCanClaim.toString() + " ELYS"
                           if (claim.claimed) {
                             claimAmount = "claimed"
                           }
@@ -312,7 +329,11 @@ class Rebates extends React.Component {
                               <TableData>{claim.date}</TableData>
                               <TableData>{claim.value} ELYS</TableData>
                               <TableData>{claimAmount}</TableData>
-                              <InFormButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx)}>Claim</InFormButton>
+                              {
+                                claim.claimed ? null
+                                :
+                                <InFormButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx)}>Claim</InFormButton>
+                              }
                             </GridTitles>
                           )
                         })
@@ -331,11 +352,29 @@ class Rebates extends React.Component {
                   <BorderedContainer>
                   <Formik
                     initialValues={{ rebate_name: "", rebate_fund: "", percentage: "", max_purchase: "", max_person: "", wallet_address: "" }}
-                    onSubmit={(data, {resetForm, setFieldValue}) => {
-
+                    validationSchema={Yup.object().shape({
+                      rebate_fund: Yup.number()
+                        .required("Please enter a valid value"),
+                      percentage: Yup.number()
+                        .required("Please enter a valid value"),
+                      max_purchase: Yup.number()
+                        .required("Please enter a valid value"),
+                      max_person: Yup.number()
+                        .required("Please enter a valid value"),
+                    })}
+                    onSubmit={() => {
+                      this.approveRebate()
                     }}
                   >
-                  {(formik) => (
+                  {({
+                      values,
+                      errors,
+                      touched,
+                      handleSubmit,
+                      isSubmitting,
+                      validating,
+                      valid,
+                    }) => (
                     <Form
                       name="rebates-form"
                       data-netlify="true"
@@ -359,7 +398,12 @@ class Rebates extends React.Component {
                         <FeatureItem>
                           <Label >Total Rebate Fund <span style={{position: 'relative', top: -5, left: -5}}>
                           <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                          <Field name="rebate_fund" onKeyUp={(value) => this.setState({rebate_fund: value.target.value})} placeholder="How many ELYS for all rebates?" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field valid={touched.rebate_fund && !errors.rebate_fund} error={touched.rebate_fund && errors.rebate_fund} name="rebate_fund" onKeyUp={(value) => this.setState({rebate_fund: value.target.value})} placeholder="How many ELYS for all rebates?" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                          <ErrorMessage name="rebate_fund">
+                            {(msg) => (
+                              <StyledInlineErrorMessage>{msg}</StyledInlineErrorMessage>
+                            )}
+                          </ErrorMessage>
                         </FeatureItem>
                         </FeaturesGrid>
                       </Flex>
@@ -369,7 +413,12 @@ class Rebates extends React.Component {
                         <FeatureItem>
                           <Label>Percentage of Purchase <span style={{position: 'relative', top: -5, left: -5}}>
                           <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                          <Field name="percentage" onKeyUp={(value) => this.setState({percentage: value.target.value})} placeholder="Rebate percent" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                          <Field valid={touched.percentage && !errors.percentage} error={touched.percentage && errors.percentage} name="percentage" onKeyUp={(value) => this.setState({percentage: value.target.value})} placeholder="Rebate percent" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "400px", height: "33px", paddingLeft: "10px"}}/>
+                          <ErrorMessage name="percentage">
+                            {(msg) => (
+                              <StyledInlineErrorMessage>{msg}</StyledInlineErrorMessage>
+                            )}
+                          </ErrorMessage>
                         </FeatureItem>
                         </FeaturesGrid>
                       </Flex>
@@ -379,14 +428,24 @@ class Rebates extends React.Component {
                       <FeatureItem>
                         <Label >Max per Purchase <span style={{position: 'relative', top: -5, left: -5}}>
                         <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                        <Field name="max_purchase" onKeyUp={(value) => this.setState({max_purchase: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <Field valid={touched.max_purchase && !errors.max_purchase} error={touched.max_purchase && errors.max_purchase} name="max_purchase" onKeyUp={(value) => this.setState({max_purchase: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <ErrorMessage name="max_purchase">
+                          {(msg) => (
+                            <StyledInlineErrorMessage>{msg}</StyledInlineErrorMessage>
+                          )}
+                        </ErrorMessage>
                       </FeatureItem>
                       </FeaturesGrid>
                       <FeaturesGrid>
                       <FeatureItem>
                         <Label>Max per Person <span style={{position: 'relative', top: -5, left: -5}}>
                         <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Label>
-                        <Field name="max_person" onKeyUp={(value) => this.setState({max_person: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <Field valid={touched.max_person && !errors.max_person} error={touched.max_person && errors.max_person} name="max_person" onKeyUp={(value) => this.setState({max_person: value.target.value})} placeholder="Max Claim" type="text" style={{background: "#FACBAC 0% 0% no-repeat padding-box", border: "2px solid #ED6F1B", borderRadius: "30px", width: "223px", height: "33px", paddingLeft: "10px"}}/>
+                        <ErrorMessage name="max_person">
+                          {(msg) => (
+                            <StyledInlineErrorMessage>{msg}</StyledInlineErrorMessage>
+                          )}
+                        </ErrorMessage>
                       </FeatureItem>
                       </FeaturesGrid>
                       </Flex>
@@ -401,7 +460,19 @@ class Rebates extends React.Component {
                       </Flex>
                       <br/>
                       <ButtonContainer>
-                        <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
+                      {
+                        this.state.approving ? <ActionButton type="submit" style={{color: "white", float: "right", width: "200px", color: '#000000', backgroundColor: '#facbac'}}>Awaiting Approval</ActionButton>
+                        :
+                        <ActionButton type="submit" style={{color: "white", float: "right", width: "200px"}}>Approve</ActionButton>
+
+                      }
+                      {
+                        this.state.rebateApproved ? <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
+
+                        :
+                        <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px", opacity: '0.5', cursor: 'default'}} disabled={true}>Fund & Create Rebate</ActionButton>
+
+                      }
                       </ButtonContainer>
                       <br/>
                     </Form>
@@ -602,6 +673,17 @@ const FeatureText = styled.p`
     display: none
   }
 `
+
+const StyledInlineErrorMessage = styled.div`
+  background-color: rgb(255, 245, 245);
+  color: rgb(120, 27, 0);
+  display: block;
+
+  padding: 0.5rem 0.75rem;
+  margin-top: 0.5rem;
+  white-space: pre-line;
+`
+
 const Submit = styled.button`
   width: 167px;
   height: 32px;
