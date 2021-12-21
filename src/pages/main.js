@@ -8,6 +8,9 @@ import PluginPage from './plugin'
 import Forest from './forest'
 import ToolShed from './toolshed'
 import Rebates from './rebates'
+import CreateRebates from './createRebates'
+import ViewRebates from './viewRebates'
+import ManageRebates from './manageRebates'
 import Footer from '../components/footer'
 import SideMenu from '../components/sidemenu'
 import Hamburger from '../components/hamburger'
@@ -142,6 +145,37 @@ class Main extends Component {
                   </PageWrapper>
                 )
               break
+              case 'createRebates':
+              body = (
+                <PageWrapper connected={this.connected}>
+                  <CreateRebates />
+                </PageWrapper>
+              )
+              break;
+
+              case 'claimRebates':
+              body = (
+                <PageWrapper connected={this.connected}>
+                  <Rebates />
+                </PageWrapper>
+              )
+              break;
+
+              case 'manageRebates':
+              body = (
+                <PageWrapper connected={this.connected}>
+                  <ManageRebates />
+                </PageWrapper>
+              )
+              break;
+
+              case 'viewRebates':
+              body = (
+                <PageWrapper connected={this.connected}>
+                  <ViewRebates />
+                </PageWrapper>
+              )
+              break;
 
         }
 

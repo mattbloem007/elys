@@ -20,31 +20,14 @@ const elysAddress = '0x52F1f3D2F38bdBe2377CDa0b0dbEB993DC242B98'
 window.forest = forest;
 
 
-class Rebates extends React.Component {
+class ManageRebates extends React.Component {
 
   constructor(props){
     super(props);
     this.state = {
       rebateData: [],
-      claimData: [],
-      specificClaimData: [],
-      checkedRebates: [],
-      vendorList: [],
-      rebateIDs: [],
-      claimTitle: "Click Check My Rebates to view Claims",
-      noClaims: "No Claims for this Rebate Yet.. Make a payment to this vendor",
-      rebate_name: "",
-      rebate_fund: "",
-      percentage: "",
-      max_purchase: "",
-      max_person: "",
-      wallet_address: "",
       spender: "",
-      rebate_fund_Error: false,
-      percentage_Error: false,
-      max_purchase_Error: false,
-      max_person_Error: false,
-      unformattedClaimAmount: 0,
+      rebateName: "sceletium.com",
       loading: true,
       hasMetamask: false,
       isConnected: false,
@@ -81,25 +64,8 @@ class Rebates extends React.Component {
         this.setState({loading: true,hasMetamask: true, isConnected: connected, RebateContract, ElysContract, currentAccount: accounts[0]})
     }
 
-    this.getData(this.state.currentAccount)
-    .then(() => {
-      if (this.state.rebateData.length == 0) {
-        this.setState({dataFeedback: "No Rebates Created Yet"})
-      }
-      else {
-        this.setState({loading: false})
-      }
-      console.log(this.state)
-    })
+    
 
-  }
-
-  formatDate = (dt) => {
-      let day = dt.getDate()
-      let month = (dt.getMonth()+1).toString()
-      if(month.length===1)month = '0' + month
-      let year = dt.getFullYear().toString().substr(2)
-      return day + '-' + month + '-' + year
   }
 
   checkMyRebates = async (idx, spender, vendor) => {
@@ -230,69 +196,29 @@ class Rebates extends React.Component {
 
  }
 
- claim = async (spender, rebate, claimIdx) => {
-   let amountToClaim = await this.state.RebateContract.methods
-     .amountCanClaimTotal(spender, rebate, claimIdx)
-     .call()
-
-   console.log("Claim Data: ", spender, rebate, claimIdx, amountToClaim)
-   await this.state.RebateContract.methods
-     .claimRebate(spender, rebate, claimIdx, amountToClaim)
-     .send({from: this.state.currentAccount})
- }
-
- approveRebate = async () => {
-  this.setState({approving: true})
-  await forest.approveRebate(this.state.rebate_fund)
-  .then((res) => this.setState({rebateApproved: true, approving: false}))
-}
-
- createRebate = async () => {
-       let b = Buffer.alloc(32)
-       b.write(this.state.rebate_name)
-       let id = '0x' + b.toString('hex')
-       console.log(id, this.state.percentage, this.state.max_purchase*1e5, this.state.max_person*1e5, this.state.wallet_address, this.state.rebate_fund*1e5)
-       try {
-         await this.state.RebateContract.methods
-           .createRebate(id, this.state.percentage, this.state.max_purchase*1e5, this.state.max_person*1e5, this.state.wallet_address, this.state.rebate_fund*1e5)
-           .send({from: this.state.currentAccount})
-           .then((res) => console.log(res))
-       }
-       catch(e) {
-         console.log("ERROR: ", e)
-       }
-
-
- }
-
-  encode = (data) => {
-    return Object.keys(data)
-      .map(key => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]))
-      .join("&")
-  }
-
     render = () => {
         return (
             <div style={{display: 'block', width: (isMobile)?350:800, borderRadius: 20, marginLeft: 'auto', marginRight: 'auto', marginTop: 40, marginBottom: 20}}>
-                  <Title>Claim Rebates</Title>
+                  <Title>Manage Rebates</Title>
                   <TextContainer>
-                    You may claim your rebates in ELYS here.
-                    <p>
-                      If you made a purchase from a Vendor who is part
-                      of the rebate program connect to elys.money with the wallet via which you made your
-                      purchase and you will be able to claim your rebate for buying in ELYS.
-                    </p>
+                    Check Rebates for this wallet:
                   </TextContainer>
+                  <Flex>
+                    <FeaturesGrid>
+                    <FeatureItem>
+                      <Input defaultValue={0.0} type={'text'} />
+                      <ActionButton>Check Now</ActionButton>
+                    </FeatureItem>
+                    </FeaturesGrid>
+                  </Flex>
                   <TableGrid>
-                    <ColTitle>Vendor<span style={{position: 'relative', top: -5, left: -5}}>
+                    <ColTitle>Name<span style={{position: 'relative', top: -5, left: -5}}>
                     <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></ColTitle>
-                    <ColTitle>Rebate % </ColTitle>
-                    <ColTitle>Max Rebate</ColTitle>
-                    <ColTitle>Rebate Fund</ColTitle>
-                    <ColTitle>Filled</ColTitle>
+                    <ColTitle>Fund Balance</ColTitle>
+                    <ColTitle>Total Claimed</ColTitle>
                   </TableGrid>
                   {
-                    this.state.loading ? <Title>{this.state.dataFeedback}</Title>
+                    /** this.state.loading ? <Title>{this.state.dataFeedback}</Title>
                     :
                     this.state.rebateData.map((rebate, i) => {
                       return (
@@ -304,60 +230,28 @@ class Rebates extends React.Component {
                           <TableData>50% back</TableData>
                         </TableGrid>
                       )
-                    })
+                    })*/
 
 
                   }
-                  {
-                    this.state.specificClaimData.map((r, i) => {
-                      return (
-                        <OuterContainer>
-                          <BorderedContainer>
-                            <Title>{
-                              r[0] ? r[0].title
-                              :
-                              this.state.noClaims
-                            }</Title>
-                            <GridTitles>
-                              <ColTitle>Purchase Date</ColTitle>
-                              <ColTitle>Purchase Amount</ColTitle>
-                              <ColTitle>Rebate Due</ColTitle>
-                            </GridTitles>
-                            {
-                              r.map((claim) => {
-                                  return (
-                                <GridTitles>
-                                  <TableData>{claim.date}</TableData>
-                                  <TableData>{claim.value} ELYS</TableData>
-                                  <TableData>{claim.amountCanClaim} ELYS</TableData>
-                                  {
-                                    claim.claimed ? <TableData>claimed</TableData>
-                                    :
-                                    <InFormButton onClick={() => this.claim(claim.spender, claim.rebate, claim.idx)}>Claim</InFormButton>
-                                  }
-                                </GridTitles>
-                                )
-                              })
-                            }
-                          </BorderedContainer>
-                        </OuterContainer>
-                      )
-                    })
-                  }
-                  {/**<Title>Don't See a Rebate - Check Vendor Wallet</Title>
-                  <div style={{marginTop: 5}}>
-                      <Input defaultValue={0.0} type={'text'} />
-                  </div>
-                  <Title>Create Rebates</Title>
-                  <TextContainer>
-                    You may create a rebate here. There is a fee of 100 ELYS to create a rebate.
-                  </TextContainer>*/}
+                  <OuterContainer>
+                    <BorderedContainer>
+                    <Title>Rebate Name</Title>
+                    <TextContainer>
+                      {this.state.rebateName}
+                    </TextContainer>
+                    <Title>Add Funds to Rebate<span style={{position: 'relative', top: -5, left: -5}}>
+                    <Info>This is the rate as an annualized percentage.  Your actual rate is: (APR x time locked in days)/365.</Info></span></Title>
+                    <Input defaultValue={0.0} placeholder="How many ELYS for all rebates?" type={'text'} />
+                    <ActionButton>Add Funds</ActionButton>
+                    </BorderedContainer>
+                  </OuterContainer>
             </div>
         )
     }
 }
 
-export default Rebates
+export default ManageRebates
 
 const Label = styled.label`
   width: 100%;
@@ -391,14 +285,12 @@ const TextContainer = styled.div`
     margin-bottom: 30px;
 `
 const Input = styled.input`
-  border: solid 1px #ED6F1B;
-  background-color: #facbac;
-  border-radius: 10px;
-  height: 20px;
-  padding: 3px;
-  width: 150px;
-  padding-left: 10;
-  outline: transparent;
+  background: #FACBAC 0% 0% no-repeat padding-box;
+  border: 2px solid #ED6F1B;
+  border-radius: 30px;
+  width: 223px;
+  height: 33px;
+  padding-left: 10px;
 `
 
 const Triangle = styled.div`

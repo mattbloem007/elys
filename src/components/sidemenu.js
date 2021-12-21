@@ -140,10 +140,26 @@ const Menu = (props) => {
     <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Plugins & Tools</Link>
     <Link current={props.page} gotoPage={props.gotoPage} page={'farm'}>Permaculture Farm</Link>
     */
-    let sub = null;
+    let subToolShed = null;
+    let subRebates = null;
     if (props.page == 'plugins' || props.page == 'pay'){
-      sub = (<SubLink current={props.page} gotoPage={props.gotoPage} page={'pay'}>ELYS Pay Button</SubLink>)
-
+      subToolShed = (<SubLink current={props.page} gotoPage={props.gotoPage} page={'pay'}>ELYS Pay Button</SubLink>)
+    }
+    if (props.page == 'rebates' || props.page == 'createRebates' || props.page == 'claimRebates' || props.page == 'manageRebates' || props.page == 'viewRebates'){
+      subRebates = (
+        <div style={{
+            width: 230,
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            marginTop: 40,
+            display: 'block'
+        }}>
+        <SubLink current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Claim Rebate</SubLink>
+        <SubLink current={props.page} gotoPage={props.gotoPage} page={'createRebates'}>Create Rebate</SubLink>
+        {/**<SubLink current={props.page} gotoPage={props.gotoPage} page={'viewRebates'}>View All Rebate</SubLink>
+        <SubLink current={props.page} gotoPage={props.gotoPage} page={'manageRebates'}>Manage Rebate</SubLink>*/}
+        </div>
+    )
     }
     return (
         <div style={style} onClick={props.click}>
@@ -153,7 +169,7 @@ const Menu = (props) => {
                 width: 230,
                 marginLeft: 'auto',
                 marginRight: 'auto',
-                marginTop: 40,
+                marginTop: 10,
                 display: 'block'
             }}>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'home'}>Home</Link>
@@ -162,9 +178,10 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap ELYS</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>The Forest</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Toolshed</Link>
-                {sub}
+                {subToolShed}
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>
+                <Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebate Grove</Link>
+                {subRebates}
 
             </div>
             <div style={{
