@@ -7,7 +7,7 @@ import Web3 from 'web3';
 //const orange = '#ec7019'
 
 const rpcEndpoint = 'https://rpc.ftm.tools/'
-   
+
 
 let trimDec = (n,dec) => {
     let ar = n.toString().split('.')
@@ -53,7 +53,7 @@ class Stats extends Component {
         catch(e){
             this.wait(200)
             return await this.getTotalElys()
-        }        
+        }
     }
     getLocked = async () => {
         let startDate = new Date('22 Aug 2021')
@@ -62,9 +62,11 @@ class Stats extends Component {
 
         let getLocked = (orig,days) => orig-(orig/days)*daysPassed
 
-        let seedLocked = getLocked(1736266,20)  //20 days
-        let teamLocked = getLocked(700000,100)  //100 days
-        let foundationLocked = getLocked(10000000,100)  //100 days
+        let seedLocked = getLocked(1736266/100000,20)  //20 days
+        let teamLocked = getLocked(700000/100000,100)  //100 days
+        let foundationLocked = getLocked(10000000/100000,100)  //100 days
+
+        console.log(seedLocked, teamLocked, foundationLocked)
 
         let land = (daysPassed<365)?10000000:0 //365 days
 
@@ -73,7 +75,7 @@ class Stats extends Component {
     componentDidMount = async () => {
         let totalSupply = await this.getTotalElys()
         let locked = await this.getLocked()
-
+        console.log("Supply, locked ", totalSupply,locked)
         this.setState({totalSupply,locked})
     }
     marketCap = () => {
@@ -89,7 +91,7 @@ class Stats extends Component {
        if(this.loading())return null
         return (
             <div style={{maxWidth: 800, marginTop: 30, marginBottom: 30}}>
-                <TokenInfoBox text={'$ ' +  this.valueLocked()} label={'Total Value Locked'} />    
+                <TokenInfoBox text={'$ ' +  this.valueLocked()} label={'Total Value Locked'} />
                 <TokenInfoBox text={'$ ' + this.marketCap()} label={'Market Cap'} />
                 <TokenInfoBox text={this.inCirculation()} label={'Circulating ELYS'} />
             </div>
