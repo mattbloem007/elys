@@ -2,13 +2,12 @@ import React, { Component } from 'react'
 import Contract from '../lib/contract'
 import contractAddress from '../crypto/contractAddress';
 import TokenInfoBox from './tokeninfobox'
-import forest from '../lib/forest'
 import Web3 from 'web3';
 
 //const orange = '#ec7019'
 
 const rpcEndpoint = 'https://rpc.ftm.tools/'
-   
+
 
 let trimDec = (n,dec) => {
     let ar = n.toString().split('.')
@@ -35,7 +34,7 @@ let addCommas = (amnt) => {
 
 class Stats extends Component {
     state = {
-        totalSupply: 0,
+        totalSupply: 0
     }
     loading = () => this.state.totalSupply===0 || this.props.price.loading
     wait = (tm) => {
@@ -54,7 +53,7 @@ class Stats extends Component {
         catch(e){
             this.wait(200)
             return await this.getTotalElys()
-        }        
+        }
     }
     getLocked = async () => {
         let startDate = new Date('22 Aug 2021')
@@ -63,23 +62,20 @@ class Stats extends Component {
 
         let getLocked = (orig,days) => orig-(orig/days)*daysPassed
 
-        let seedLocked = getLocked(1736266,20)  //20 days
-        let teamLocked = getLocked(700000,100)  //100 days
-        let foundationLocked = getLocked(10000000,100)  //100 days
+        let seedLocked = getLocked(1736266/100000,20)  //20 days
+        let teamLocked = getLocked(700000/100000,100)  //100 days
+        let foundationLocked = getLocked(10000000/100000,100)  //100 days
+
+        console.log(seedLocked, teamLocked, foundationLocked)
 
         let land = (daysPassed<365)?10000000:0 //365 days
-        
-        let provider = new Web3.providers.HttpProvider(rpcEndpoint)
-        let w3 = new Web3(provider)
-        let stats = await forest.getStats(w3)
-        
-        return parseInt(seedLocked + teamLocked + foundationLocked + land) + parseInt(stats.totalLocked/1e5)
 
+        return parseInt(seedLocked + teamLocked + foundationLocked + land)
     }
     componentDidMount = async () => {
         let totalSupply = await this.getTotalElys()
         let locked = await this.getLocked()
-
+        console.log("Supply, locked ", totalSupply,locked)
         this.setState({totalSupply,locked})
     }
     marketCap = () => {
@@ -95,7 +91,7 @@ class Stats extends Component {
        if(this.loading())return null
         return (
             <div style={{maxWidth: 800, marginTop: 30, marginBottom: 30}}>
-                <TokenInfoBox text={'$ ' +  this.valueLocked()} label={'Total Value Locked'} />    
+                <TokenInfoBox text={'$ ' +  this.valueLocked()} label={'Total Value Locked'} />
                 <TokenInfoBox text={'$ ' + this.marketCap()} label={'Market Cap'} />
                 <TokenInfoBox text={this.inCirculation()} label={'Circulating ELYS'} />
             </div>
