@@ -48,6 +48,7 @@ class CreateRebates extends React.Component {
       dataFeedback: "Loading...",
       rebateApproved: false,
       approving: false,
+      funding: false
     }
   }
 
@@ -92,7 +93,7 @@ class CreateRebates extends React.Component {
 }
 
  createRebate = async () => {
-   console.log("STATE", this.state)
+   this.setState({funding: true})
        let b = Buffer.alloc(32)
        b.write(this.state.rebate_name)
        let id = '0x' + b.toString('hex')
@@ -101,7 +102,7 @@ class CreateRebates extends React.Component {
          await this.state.RebateContract.methods
            .createRebate(id, this.state.percentage, this.state.max_purchase*1e5, this.state.max_person*1e5, this.state.wallet_address, this.state.rebate_fund*1e5)
            .send({from: this.state.currentAccount})
-           .then((res) => console.log(res))
+           .then((res) => this.setState({rebateApproved: true, funding: false}))
        }
        catch(e) {
          console.log("ERROR: ", e)
@@ -129,18 +130,16 @@ class CreateRebates extends React.Component {
           <ActionButton style={{color: "white", float: "right", width: "200px", backgroundColor: '#facbac'}} disabled={true}>Approved</ActionButton>
         )
       }
-      // else if (!this.state.approving) {
-      //   approveButton = (
-      //     <ActionButton type="submit" style={{color: "white", float: "right", width: "200px", backgroundColor: '#facbac'}} disabled={true}>Approve</ActionButton>
-      //   )
-      // onSubmit={() => {
-     //    this.approveRebate()
-      //}}
-      // }
 
-      if (this.state.rebateApproved) {
+
+      if (!this.state.funding && this.state.rebateApproved) {
         fundButton = (
           <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
+        )
+      }
+      else if (this.state.funding) {
+      fundButton  = (
+          <ActionButton type="submit" style={{color: "white", float: "right", width: "200px", color: '#000000', backgroundColor: '#facbac'}} disabled={true}>Awaiting Funding</ActionButton>
         )
       }
 
