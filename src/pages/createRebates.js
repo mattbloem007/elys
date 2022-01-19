@@ -47,7 +47,7 @@ class CreateRebates extends React.Component {
       currentAccount: "",
       dataFeedback: "Loading...",
       rebateApproved: false,
-      approving: false
+      approving: false,
     }
   }
 
@@ -92,6 +92,7 @@ class CreateRebates extends React.Component {
 }
 
  createRebate = async () => {
+   console.log("STATE", this.state)
        let b = Buffer.alloc(32)
        b.write(this.state.rebate_name)
        let id = '0x' + b.toString('hex')
@@ -106,7 +107,6 @@ class CreateRebates extends React.Component {
          console.log("ERROR: ", e)
        }
 
-
  }
 
   encode = (data) => {
@@ -116,6 +116,34 @@ class CreateRebates extends React.Component {
   }
 
     render = () => {
+      let approveButton = (<ActionButton onClick={() => this.approveRebate()} style={{color: "white", float: "right", width: "200px"}}>Approve</ActionButton>)
+      let fundButton = (<ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px", opacity: '0.5', cursor: 'default'}} disabled={true}>Fund & Create Rebate</ActionButton>)
+
+      if(this.state.approving) {
+        approveButton = (
+          <ActionButton type="submit" style={{color: "white", float: "right", width: "200px", color: '#000000', backgroundColor: '#facbac'}} disabled={true}>Awaiting Approval</ActionButton>
+        )
+      }
+      else if (!this.state.approving && this.state.rebateApproved) {
+        approveButton = (
+          <ActionButton style={{color: "white", float: "right", width: "200px", backgroundColor: '#facbac'}} disabled={true}>Approved</ActionButton>
+        )
+      }
+      // else if (!this.state.approving) {
+      //   approveButton = (
+      //     <ActionButton type="submit" style={{color: "white", float: "right", width: "200px", backgroundColor: '#facbac'}} disabled={true}>Approve</ActionButton>
+      //   )
+      // onSubmit={() => {
+     //    this.approveRebate()
+      //}}
+      // }
+
+      if (this.state.rebateApproved) {
+        fundButton = (
+          <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
+        )
+      }
+
         return (
             <div style={{display: 'block', width: (isMobile)?350:800, borderRadius: 20, marginLeft: 'auto', marginRight: 'auto', marginTop: 40, marginBottom: 20}}>
             <Title>Create Rebates</Title>
@@ -135,9 +163,7 @@ class CreateRebates extends React.Component {
                       max_person: Yup.number()
                         .required("Please enter a valid value"),
                     })}
-                    onSubmit={() => {
-                      this.approveRebate()
-                    }}
+
                   >
                   {({
                       values,
@@ -233,19 +259,8 @@ class CreateRebates extends React.Component {
                       </Flex>
                       <br/>
                       <ButtonContainer>
-                      {
-                        this.state.approving ? <ActionButton type="submit" style={{color: "white", float: "right", width: "200px", color: '#000000', backgroundColor: '#facbac'}}>Awaiting Approval</ActionButton>
-                        :
-                        <ActionButton type="submit" style={{color: "white", float: "right", width: "200px"}}>Approve</ActionButton>
-
-                      }
-                      {
-                        this.state.rebateApproved ? <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px"}}>Fund & Create Rebate</ActionButton>
-
-                        :
-                        <ActionButton onClick={() => this.createRebate()} style={{color: "white", float: "right", width: "200px", opacity: '0.5', cursor: 'default'}} disabled={true}>Fund & Create Rebate</ActionButton>
-
-                      }
+                      {approveButton}
+                      {fundButton}
                       </ButtonContainer>
                       <br/>
                     </Form>
