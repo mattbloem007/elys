@@ -100,17 +100,17 @@ function PluginPage() {
 
                     <RadioLabel>
                       <SacramentSymbol src={donateWhite} />
-                      <Field style={{marginBottom: "10px"}} type="radio" name="donateButton" value="dWhite" />
+                      <Field style={{marginBottom: "10px"}} type="radio" name="elysButton" value="dWhite" />
                       Donate White
                     </RadioLabel>
                     <RadioLabel>
                       <SacramentSymbol src={donateOrange} />
-                      <Field style={{marginBottom: "10px"}} type="radio" name="donateButton" value="dOrange" />
+                      <Field style={{marginBottom: "10px"}} type="radio" name="elysButton" value="dOrange" />
                       Donate Orange
                     </RadioLabel>
                     <RadioLabel>
                       <SacramentSymbol src={donateBrown} />
-                      <Field style={{marginBottom: "10px"}} type="radio" name="donateButton" value="dBrown" />
+                      <Field style={{marginBottom: "10px"}} type="radio" name="elysButton" value="dBrown" />
                       Donate Brown
                     </RadioLabel>
                   </Flex>
