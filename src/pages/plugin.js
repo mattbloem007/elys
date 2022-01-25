@@ -4,6 +4,9 @@ import styled from "styled-components"
 import elysBrown from '../images/pay-with-elys-brown.png'
 import elysOrange from '../images/pay-with-elys-orange.png'
 import elysWhite from '../images/pay-with-elys-white.png'
+import donateBrown from '../images/donateBrown.png'
+import donateOrange from '../images/donateOrange.png'
+import donateWhite from '../images/donateWhite.png'
 import { Container, Section } from "../global"
 
 const encode = data => {
@@ -93,6 +96,22 @@ function PluginPage() {
                       <SacramentSymbol src={elysBrown} />
                       <Field style={{marginBottom: "10px"}} type="radio" name="elysButton" value="Brown" />
                       Brown
+                    </RadioLabel>
+
+                    <RadioLabel>
+                      <SacramentSymbol src={donateWhite} />
+                      <Field style={{marginBottom: "10px"}} type="radio" name="donateButton" value="dWhite" />
+                      Donate White
+                    </RadioLabel>
+                    <RadioLabel>
+                      <SacramentSymbol src={donateOrange} />
+                      <Field style={{marginBottom: "10px"}} type="radio" name="donateButton" value="dOrange" />
+                      Donate Orange
+                    </RadioLabel>
+                    <RadioLabel>
+                      <SacramentSymbol src={donateBrown} />
+                      <Field style={{marginBottom: "10px"}} type="radio" name="donateButton" value="dBrown" />
+                      Donate Brown
                     </RadioLabel>
                   </Flex>
                 </SacramentSymbolsContainer>
