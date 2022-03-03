@@ -20,7 +20,7 @@ const SwapPage = (props) => {
             fontSize: 20,
             fontWeight: 'bold'
 
-        }}>ZooDEX ELYS-FTM</a>
+        }}>SpookySwap ELYS-FTM</a>
         <img src={spooky} width={isMobile?300:600} alt="SpookySwap" style={{
             display: 'block',
             width: isMobile?300:600,
