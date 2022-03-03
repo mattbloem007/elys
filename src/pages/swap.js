@@ -13,7 +13,7 @@ const SwapPage = (props) => {
         <div style={{fontWeight: 'bold'}}>If you wish to buy or sell ELYS you can swap FTM for ELYS at SpookySwap</div>
         <a href="https://spookyswap.finance/swap?inputCurrency=FTM&outputCurrency=0xd89cc0d2a28a769eadef50fff74ebc07405db9fc"
         style={{
-            textDecoration: 'none',
+            textDecoration: 'underline',
             color: '#ffffff',
             display: 'block',
             marginTop: 20,
