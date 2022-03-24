@@ -3,7 +3,7 @@ import React from 'react'
 import {isMobile} from 'react-device-detect';
 import styled from "styled-components"
 import { Container, Section } from "../global"
-import woo from "../images/woo.png"
+import woo from "../images/woo1.png"
 
 class ToolShed extends React.Component {
 
