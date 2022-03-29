@@ -40,14 +40,27 @@ const Link = (props) => {
         fontSize: 17,
         backgroundColor: 'transparent',
         display: 'block',
-        marginTop: 25
+        marginTop: 25,
+        textDecoration: 'none',
+        cursor: 'pointer'
     }
-    if(props.page===props.current){
-        style.fontWeight = 'bold'
+    if(props.page) {
+      if(props.page===props.current){
+          style.fontWeight = 'bold'
+      }
+
+      return (
+          <button style={style} onClick={()=>props.gotoPage(props.page)}>{props.children}</button>
+      )
     }
-    return (
-        <button style={style} onClick={()=>props.gotoPage(props.page)}>{props.children}</button>
-    )
+    else {
+      return (
+        <form action={props.href} method="get" target="_blank">
+         <button type="submit" style={style}>{props.children}</button>
+        </form>
+      )
+    }
+
 }
 
 const SubLink = (props) => {
@@ -105,14 +118,14 @@ const Price = (props) => {
     }}>
         <img src={logo} width={30} alt="ElysLogo" />
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
-            <a style={{textDecoration: 'none', color: '#000000'}} href="https://kek.tools/t/0xd89cc0d2a28a769eadef50fff74ebc07405db9fc" target="_blank" rel="noreferrer">${trimDec(props.price.usd,2)}</a>
+            <a style={{textDecoration: 'none', color: '#000000'}} href="https://kek.tools/t/0xd89cc0d2a28a769eadef50fff74ebc07405db9fc" target="_blank" rel="noreferrer">${trimDec(props.price.usd,3)}</a>
         </div>
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
             =
         </div>
         <img src={ftmlogo} alt="FTMLogo" width={16} style={{position: 'relative', top: -2, marginLeft: 10}}/>
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
-        <a style={{textDecoration: 'none', color: '#000000'}} href="https://charts.zoocoin.cash/charts?exchange=ZooDex&pair=0x6831b2EDe25Dcc957256FAE815f051181F6C7b08-inverted" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,2)}</a>
+        <a style={{textDecoration: 'none', color: '#000000'}} href="https://charts.zoocoin.cash/charts?exchange=ZooDex&pair=0x6831b2EDe25Dcc957256FAE815f051181F6C7b08-inverted" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,3)}</a>
         </div>
 
 
@@ -160,9 +173,10 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Unlock Tokens</Link>
 
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap ELYS</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>The Forest</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Toolshed</Link>
+                <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>Lock ELYS</Link>
+                <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Payment Tools</Link>
                 {sub}
+                <Link target="_blank" href={"http://bridge.elys.money/"}>BTC Bridge</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
                 {/**<Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>*/}
 
