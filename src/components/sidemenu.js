@@ -170,13 +170,12 @@ const Menu = (props) => {
                 display: 'block'
             }}>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'home'}>Home</Link>
-                <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Unlock Tokens</Link>
-
                 <Link current={props.page} gotoPage={props.gotoPage} page={'swap'}>Swap ELYS</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>Lock ELYS</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Payment Tools</Link>
                 {sub}
                 <Link target="_blank" href={"http://bridge.elys.money/"}>BTC Bridge</Link>
+                <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Seed Sale Tokens</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
                 {/**<Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>*/}
 
