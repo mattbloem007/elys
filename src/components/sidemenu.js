@@ -71,7 +71,8 @@ const SubLink = (props) => {
         marginLeft: 10,
         backgroundColor: 'transparent',
         display: 'block',
-        marginTop: 10
+        marginTop: 10,
+        cursor: 'pointer'
     }
     if(props.page===props.current){
         style.fontWeight = 'bold'
@@ -125,7 +126,7 @@ const Price = (props) => {
         </div>
         <img src={ftmlogo} alt="FTMLogo" width={16} style={{position: 'relative', top: -2, marginLeft: 10}}/>
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
-        <a style={{textDecoration: 'none', color: '#000000'}} href="https://charts.zoocoin.cash/charts?exchange=ZooDex&pair=0x6831b2EDe25Dcc957256FAE815f051181F6C7b08-inverted" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,3)}</a>
+        <a style={{textDecoration: 'none', color: '#000000'}} href="https://info.spookyswap.finance/pair/0x319c304daddd1300063149dd44a648a925f07601" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,3)}</a>
         </div>
 
 

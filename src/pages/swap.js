@@ -21,13 +21,16 @@ const SwapPage = (props) => {
             fontWeight: 'bold'
 
         }}>SpookySwap ELYS-FTM</a>
-        <img src={spooky} width={isMobile?300:600} alt="SpookySwap" style={{
-            display: 'block',
-            width: isMobile?300:600,
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginTop: 30
-        }}/>
+        <a target="_blank" href="https://spookyswap.finance/swap?inputCurrency=FTM&outputCurrency=0xd89cc0d2a28a769eadef50fff74ebc07405db9fc">
+          <img src={spooky}  width={isMobile?300:600} alt="SpookySwap" style={{
+              display: 'block',
+              width: isMobile?300:600,
+              marginLeft: 'auto',
+              marginRight: 'auto',
+              marginTop: 30,
+              cursor: 'pointer'
+          }}/>
+        </a>
     </div>)
 }
 
