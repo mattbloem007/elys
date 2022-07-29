@@ -50,7 +50,6 @@ const Footer = () => (
                 <Link href="faq">FAQ</Link>
             </Column>
             <Column header="Technology">
-                <Link href="roadmap">Roadmap</Link>
                 <Link href="token-timelines">Token</Link>
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
@@ -60,6 +59,7 @@ const Footer = () => (
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
             <Column header="Listings">
+                <Link href="https://nomics.com/assets/elys-elyseos" style={{marginLeft: "0px"}}>Nomics</Link>
                 <Link href="https://spooky.fi/#/" style={{marginLeft: "0px"}}>Spooky Swap</Link>
             </Column>
 
