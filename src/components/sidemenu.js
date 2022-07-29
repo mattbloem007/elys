@@ -5,6 +5,7 @@ import medium from "../images/medium-black-icon.png"
 import email from "../images/email-icon.png"
 import discord from "../images/discord-black-icon.png"
 import telegram from "../images/telegram-black-icon.png"
+import gitbook from '../images/Social Media Icons Black Gitbook - V1.0.png'
 
 import logo from '../images/logo.png'
 import ftmlogo from '../images/ftmlogo.png'
@@ -119,14 +120,14 @@ const Price = (props) => {
     }}>
         <img src={logo} width={30} alt="ElysLogo" />
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
-            <a style={{textDecoration: 'none', color: '#000000'}} href="https://kek.tools/t/0xd89cc0d2a28a769eadef50fff74ebc07405db9fc" target="_blank" rel="noreferrer">${trimDec(props.price.usd,3)}</a>
+            <a style={{textDecoration: 'none', color: '#000000'}} href="https://nomics.com/assets/elys-elyseos" target="_blank" rel="noreferrer">${trimDec(props.price.usd,3)}</a>
         </div>
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
             =
         </div>
         <img src={ftmlogo} alt="FTMLogo" width={16} style={{position: 'relative', top: -2, marginLeft: 10}}/>
         <div style={{display: 'inline-block', marginLeft: 10, verticalAlign: 'top', marginTop: 5}}>
-        <a style={{textDecoration: 'none', color: '#000000'}} href="https://info.spookyswap.finance/pair/0x319c304daddd1300063149dd44a648a925f07601" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,3)}</a>
+        <a style={{textDecoration: 'none', color: '#000000'}} href="https://spooky.fi/#/" target="_blank" rel="noreferrer">{trimDec(props.price.ftm,3)}</a>
         </div>
 
 
@@ -196,6 +197,7 @@ const Menu = (props) => {
                 <Icon src={medium} alt="medium" href="https://medium.com/@Elyseos"/>
                 <Icon src={email} alt="email" href="https://www.elyseos.com/email-signup"/>
                 <Icon src={discord} alt="discord" href="https://discord.gg/gY2WMAnBem"/>
+                <Icon src={gitbook} alt="discord" href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U"/>
             </div>
         </div>
     )

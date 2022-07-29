@@ -4,13 +4,13 @@ const Column = (props) => {
     return (
         <div style={{
             display: 'inline-block',
-            width: (isMobile)?70:'27%',
+            width: (isMobile)?70:'20%',
             color: '#000000',
             verticalAlign: 'top',
             textAlign: 'left',
             marginLeft: 30
         }}>
-            <div style={{fontSize: 16, fontWeight: 'bold', marginTop: (isMobile)?5:8, marginBottom: 6}}>{props.header}</div> 
+            <div style={{fontSize: 16, fontWeight: 'bold', marginTop: (isMobile)?5:8, marginBottom: 6}}>{props.header}</div>
             {props.children}
         </div>
     )
@@ -18,7 +18,7 @@ const Column = (props) => {
 
 const Link = (props) => {
     return <a href={'https://www.elyseos.com/' + props.href} style={{
-        display: 'block', 
+        display: 'block',
         textDecoration: 'none',
         textAlign: 'left',
         color: '#000000',
@@ -55,10 +55,14 @@ const Footer = () => (
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
             <Column header="Community">
-                <Link href="roadmap">Roadmap</Link>
+                <Link href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U">Guidebook</Link>
+                <Link href="https://snapshot.org/#/elyseos.eth">Governance</Link>
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
-            
+            <Column header="Listings">
+                <Link href="https://spooky.fi/#/" style={{marginLeft: "0px"}}>Spooky Swap</Link>
+            </Column>
+
         </div>
     </div>
 )
