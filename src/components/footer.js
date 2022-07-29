@@ -28,6 +28,18 @@ const Link = (props) => {
     }}>{props.children}</a>
 }
 
+const LinkHost = (props) => {
+    return <a href={props.href} style={{
+        display: 'block',
+        textDecoration: 'none',
+        textAlign: 'left',
+        color: '#000000',
+        fontSize: 14,
+        marginLeft: 4,
+        marginTop: 2
+    }}>{props.children}</a>
+}
+
 let footerTop = (isMobile)?window.innerHeight - 150:window.innerHeight - 100
 if(!isMobile && footerTop<700)footerTop = 700
 
@@ -54,13 +66,13 @@ const Footer = () => (
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
             <Column header="Community">
-                <Link href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U">Guidebook</Link>
-                <Link href="https://snapshot.org/#/elyseos.eth">Governance</Link>
+                <LinkHost href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U">Guidebook</LinkHost>
+                <LinkHost href="https://snapshot.org/#/elyseos.eth">Governance</LinkHost>
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
             <Column header="Listings">
-                <Link href="https://nomics.com/assets/elys-elyseos" style={{marginLeft: "0px"}}>Nomics</Link>
-                <Link href="https://spooky.fi/#/" style={{marginLeft: "0px"}}>Spooky Swap</Link>
+                <LinkHost href="https://nomics.com/assets/elys-elyseos" style={{marginLeft: "0px"}}>Nomics</LinkHost>
+                <LinkHost href="https://spooky.fi/#/" style={{marginLeft: "0px"}}>Spooky Swap</LinkHost>
             </Column>
 
         </div>
