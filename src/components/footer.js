@@ -29,7 +29,7 @@ const Link = (props) => {
 }
 
 const LinkHost = (props) => {
-    return <a href={props.href} style={{
+    return <a target="_blank" href={props.href} style={{
         display: 'block',
         textDecoration: 'none',
         textAlign: 'left',
@@ -68,7 +68,6 @@ const Footer = () => (
             <Column header="Community">
                 <LinkHost href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U">Guidebook</LinkHost>
                 <LinkHost href="https://snapshot.org/#/elyseos.eth">Governance</LinkHost>
-                <Link href="litepaper">Lightpaper</Link>
             </Column>
             <Column header="Listings">
                 <LinkHost href="https://nomics.com/assets/elys-elyseos" style={{marginLeft: "0px"}}>Nomics</LinkHost>
