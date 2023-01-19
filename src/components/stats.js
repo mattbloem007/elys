@@ -61,8 +61,13 @@ class Stats extends Component {
         let daysPassed = parseInt((now - startDate.getTime())/(24*3600*1000))
 
         let getLocked = (orig,days) => {
-          console.log("orig", orig)
-          return (orig-(orig/days)*daysPassed)
+          let lcked = orig-(orig/days)*daysPassed
+          if (lcked < 0) {
+            return 0
+          }
+          else {
+            return (orig-(orig/days)*daysPassed)
+          }
         }
 
         let seedLocked = getLocked(1736266/100000,20)  //20 days
