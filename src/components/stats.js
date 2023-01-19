@@ -60,7 +60,10 @@ class Stats extends Component {
         let now = Date.now()
         let daysPassed = parseInt((now - startDate.getTime())/(24*3600*1000))
 
-        let getLocked = (orig,days) => orig-(orig/days)*daysPassed
+        let getLocked = (orig,days) => {
+          console.log("orig", orig)
+          return (orig-(orig/days)*daysPassed)
+        }
 
         let seedLocked = getLocked(1736266/100000,20)  //20 days
         let teamLocked = getLocked(700000/100000,100)  //100 days
@@ -88,6 +91,7 @@ class Stats extends Component {
         return addCommas(this.state.totalSupply/100000 - this.state.locked)
     }
     render = () => {
+      console.log("PROPS", this.props)
        if(this.loading())return null
         return (
             <div style={{maxWidth: 800, marginTop: 30, marginBottom: 30}}>

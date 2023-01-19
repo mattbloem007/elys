@@ -176,7 +176,7 @@ const Menu = (props) => {
                 <Link current={props.page} gotoPage={props.gotoPage} page={'forest'}>Lock ELYS</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'plugins'}>Payment Tools</Link>
                 {sub}
-                <Link target="_blank" href={"https://bridge.elys.money"}>BTC Bridge</Link>
+                {/**<Link target="_blank" href={"https://bridge.elys.money"}>BTC Bridge</Link>*/}
                 <Link current={props.page} gotoPage={props.gotoPage} page={'token'}>Seed Sale Tokens</Link>
                 <Link current={props.page} gotoPage={props.gotoPage} page={'homepage'}>Elyseos Homepage</Link>
                 {/**<Link current={props.page} gotoPage={props.gotoPage} page={'rebates'}>Rebates</Link>*/}
@@ -197,7 +197,7 @@ const Menu = (props) => {
                 <Icon src={medium} alt="medium" href="https://medium.com/@Elyseos"/>
                 <Icon src={email} alt="email" href="https://www.elyseos.com/email-signup"/>
                 <Icon src={discord} alt="discord" href="https://discord.gg/gY2WMAnBem"/>
-                <Icon src={gitbook} alt="discord" href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U"/>
+                <Icon src={gitbook} alt="discord" href="https://elyseos.gitbook.io"/>
             </div>
         </div>
     )

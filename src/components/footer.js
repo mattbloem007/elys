@@ -66,7 +66,7 @@ const Footer = () => (
                 <Link href="litepaper">Lightpaper</Link>
             </Column>
             <Column header="Community">
-                <LinkHost href="https://app.gitbook.com/c/5deeMaOeXG1Hj9HVcM5U">Guidebook</LinkHost>
+                <LinkHost href="https://elyseos.gitbook.io">Guidebook</LinkHost>
                 <LinkHost href="https://snapshot.org/#/elyseos.eth">Governance</LinkHost>
             </Column>
             <Column header="Listings">
