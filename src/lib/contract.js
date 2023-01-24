@@ -31,7 +31,7 @@ class Contract {
                 if(params===undefined) params=[];
                 if( params.length!==method.inputs.length) throw new Error("Incorrect number of parameters");
                 let func = await this._contract.methods[_method](...params);
-                let options = {from:_acc}; 
+                let options = {from:_acc};
                 if(method.stateMutability==="payable"){
                     if(value===undefined || value===0) throw new Error("value needs to be set for payable methods");
                     options.value = value;
@@ -41,9 +41,9 @@ class Contract {
                     return res;
                 } else {
                     options.gasPrice = await this.w3.eth.getGasPrice();
-                    
+
                     let gasEstOptions = {from: options.from, gasPrice: options.gasPrice}
-                    
+
                     if(value>0) gasEstOptions.value = value
                     try{
                         options.gas =  await func.estimateGas(gasEstOptions)
@@ -53,7 +53,7 @@ class Contract {
                         options.gas = 2000000
                     }
                     try{
-                        
+
                         let res = await func.send(options);
                         return res;
                     }
@@ -81,7 +81,7 @@ class Contract {
                         if(res) return res
                         throw(er)
                     }
-                    
+
                 }
             }
         });

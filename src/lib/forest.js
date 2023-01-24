@@ -36,7 +36,7 @@ const getAddress = (nm) => (getNetwork()==='main')?contractAddress[nm]:(getNetwo
 
 const getElysContract = async (w3) =>  new Contract('elys',getAddress('elys'),w3)
 
-const getFactoryContract = async (w3) => new Contract('forestFactory',getAddress('forestFactory'),w3)
+const getFactoryContract = async (w3) => new Contract('forestFactory','0x4000723Ce9354e9085783A6Cd533BD528327D23E',w3)
 
 let _lock = null
 
@@ -113,7 +113,7 @@ const getTokenId = async () => {
 const lockElys = async (amount, lockDays, donation) => {
     //check if amount is approved
     donation = donation || 0
-    
+
     let acc = await getAccount()
     let elys = await getElysContract()
     let spender = getAddress('forestFactory')
@@ -121,7 +121,7 @@ const lockElys = async (amount, lockDays, donation) => {
     if(approved<amount*1e5) return {error: 'insufficient approval'}
     let tokenId = await getTokenId()
     let factory = await getFactoryContract()
-    
+
     try{
         factory.lock([amount*1e5, lockDays, donation, tokenId]).then(console.log)
         let locked = false
@@ -214,13 +214,13 @@ const emergencyRelease = async (tokenId) => {
 const transfer = async (tokenId, to, cnt) => {
     //if(cnt && cnt>10)return {error: new Error('transfer unsuccesful')}
     //await wait(500)
-    
+
     try{
-        
+
         let acc = await getAccount()
-       
+
         let lock = await getLock()
-        
+
         lock.transferFrom([acc,to,parseInt(tokenId)])
         let transferred = false
         let cnt = 0
@@ -240,12 +240,13 @@ const transfer = async (tokenId, to, cnt) => {
         cnt++
         return await transfer(tokenId, to, cnt)
     }
-    
+
 }
 
 const getLeft = async (w3) => {
     let elys = await getElysContract(w3)
-    let bal = await elys.balanceOf([getAddress('forestFactory')])
+    let bal = await elys.balanceOf(['0x4000723Ce9354e9085783A6Cd533BD528327D23E'])//elys.balanceOf([getAddress('forestFactory')])
+    console.log("Locks")
     return bal
 }
 
@@ -255,14 +256,15 @@ const getStats = async (w3) => {
     let totalLocked = parseInt(stats[0])
     let totalRewards = parseInt(stats[1])
     let totalTimeLocked = parseInt(stats[2])
-    let toClaim = await getLeft(w3)
+  //  let toClaim = await getLeft(w3)
     let locksCreated = await lock.totalSupply()
     locksCreated = parseInt(locksCreated)
+
     return {
         totalLocked,
         totalRewards,
         avgTimeLocked: totalTimeLocked/locksCreated,
-        toClaim:parseInt(toClaim),
+      //  toClaim:parseInt(toClaim),
         locksCreated
     }
 }

@@ -3,7 +3,9 @@ import Contract from '../lib/contract'
 import contractAddress from '../crypto/contractAddress';
 import TokenInfoBox from './tokeninfobox'
 import Web3 from 'web3';
+import forest from '../lib/forest'
 
+window.forest = forest;
 //const orange = '#ec7019'
 
 const rpcEndpoint = 'https://rpc.ftm.tools/'
@@ -34,7 +36,9 @@ let addCommas = (amnt) => {
 
 class Stats extends Component {
     state = {
-        totalSupply: 0
+        totalSupply: 0,
+        totalLocked: 0,
+        w3: null
     }
     loading = () => this.state.totalSupply===0 || this.props.price.loading
     wait = (tm) => {
@@ -45,6 +49,7 @@ class Stats extends Component {
     getTotalElys = async () => {
         let provider = new Web3.providers.HttpProvider(rpcEndpoint)
         let w3 = new Web3(provider)
+        this.setState({w3})
         let Token = new Contract('elys',contractAddress['elys'],w3)
         try{
             let totalSupply = await Token['totalSupply']()
@@ -74,6 +79,7 @@ class Stats extends Component {
         let teamLocked = getLocked(700000/100000,100)  //100 days
         let foundationLocked = getLocked(10000000/100000,100)  //100 days
 
+
         console.log(seedLocked, teamLocked, foundationLocked)
 
         let land = (daysPassed<365)?10000000:0 //365 days
@@ -82,15 +88,22 @@ class Stats extends Component {
     }
     componentDidMount = async () => {
         let totalSupply = await this.getTotalElys()
-        let locked = await this.getLocked()
-        console.log("Supply, locked ", totalSupply,locked)
-        this.setState({totalSupply,locked})
+        let locked = null //await this.getLocked()
+        let stats = null
+        let totalLockedUSD = 0;
+        if(this.state.w3) {
+           stats = await forest.getStats(this.state.w3)
+           totalLockedUSD = this.valueLocked(stats)
+        }
+        console.log("Supply, locked ", totalSupply,locked, totalLockedUSD)
+        this.setState({totalSupply,locked, totalLocked: totalLockedUSD})
     }
     marketCap = () => {
         return addCommas(trimDec((this.state.totalSupply/100000)*this.props.price.usd,0))
     }
-    valueLocked = () => {
-        return addCommas(trimDec(this.state.locked * this.props.price.usd,0))
+    valueLocked = (stats) => {
+        return addCommas(trimDec(stats.totalLocked/1e5 * this.props.price.usd,0))
+
     }
     inCirculation = () => {
         return addCommas(this.state.totalSupply/100000 - this.state.locked)
@@ -100,7 +113,7 @@ class Stats extends Component {
        if(this.loading())return null
         return (
             <div style={{maxWidth: 800, marginTop: 30, marginBottom: 30}}>
-                <TokenInfoBox text={'$ ' +  this.valueLocked()} label={'Total Value Locked'} />
+                <TokenInfoBox text={'$ ' +  this.state.totalLocked} label={'Total Value Locked'} />
                 <TokenInfoBox text={'$ ' + this.marketCap()} label={'Market Cap'} />
                 <TokenInfoBox text={this.inCirculation()} label={'Circulating ELYS'} />
             </div>
