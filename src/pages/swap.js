@@ -1,4 +1,4 @@
-import spooky from "../images/spooky.png"
+import spooky from "../images/beethoven.png"
 import {isMobile} from 'react-device-detect';
 
 const SwapPage = (props) => {
@@ -10,8 +10,8 @@ const SwapPage = (props) => {
             marginTop: 50,
             textAlign: 'center'
     }}>
-        <div style={{fontWeight: 'bold'}}>If you wish to buy or sell ELYS you can swap FTM for ELYS at SpookySwap</div>
-        <a href="https://spooky.fi/#/"
+        <div style={{fontWeight: 'bold'}}>If you wish to buy or sell ELYS you can swap FTM for ELYS at Beethoven-X</div>
+        <a href="https://beets.fi/"
         style={{
             textDecoration: 'underline',
             color: '#ffffff',
@@ -20,9 +20,9 @@ const SwapPage = (props) => {
             fontSize: 20,
             fontWeight: 'bold'
 
-        }}>SpookySwap ELYS-FTM</a>
-        <a target="_blank" href="https://spooky.fi/#/">
-          <img src={spooky}  width={isMobile?300:600} alt="SpookySwap" style={{
+        }}>Beethoven-X ELYS-FTM</a>
+        <a target="_blank" href="https://beets.fi/">
+          <img src={spooky}  width={isMobile?300:600} alt="Beethoven-X" style={{
               display: 'block',
               width: isMobile?300:600,
               marginLeft: 'auto',
